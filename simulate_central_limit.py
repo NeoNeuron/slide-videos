@@ -130,7 +130,16 @@ uh.set_frame_numbers = number_list
 uh.set_colors = plt.cm.Oranges(0.8*np.arange(len(number_list)/len(number_list)))
 
 anim = FuncAnimation(fig, uh, frames=16, interval=800, blit=True)
-anim.save('evolving_bernoulli.mp4', dpi=300, )
+anim.save('evolving_bernoulli.mp4', dpi=300, codec='mpeg4')
+# %%
+from moviepy.editor import *
+
+fname = "evolving_bernoulli.mp4"
+video = VideoFileClip(fname, audio=False)
+video = video.subclip(0,video.duration)
+#video = video.subclip(0,60)
+
+video.to_videofile(fname.split('.')[0]+'_recompressed.mp4', fps=24)
 # %%
 # draw static plots
 pm = {
