@@ -99,76 +99,42 @@ class UpdateHistogram():
         for line, c in zip(self.lines, self.color[-len(self.lines):]):
             line.set_color(c)
 
-#%%
-# Simulate Bernoulli random tests
 
-# my_distribution = boltzmann
-# my_dist_args = dict(
-#     lambda_=1.4,
-#     N = 19,
-# )
-my_distribution = bernoulli
-my_dist_args = dict(
-    p=0.9,
-)
+if __name__ == '__main__':
+    from moviepy.editor import *
 
-n = 350 # number of accumulated samples
-K = 100000 # number of random tests
+    # Simulate Bernoulli random tests
 
-# calculate the accumulate mean and variance
-single_mean, single_var  = my_distribution.stats(**my_dist_args, moments='mv')
-# generate sampling data
-attendence = my_distribution.rvs(**my_dist_args, size=(K,n), random_state=1240)
+    # my_distribution = boltzmann
+    # my_dist_args = dict(
+    #     lambda_=1.4,
+    #     N = 19,
+    # )
+    my_distribution = bernoulli
+    my_dist_args = dict(
+        p=0.9,
+    )
 
-# %%
+    n = 350 # number of accumulated samples
+    K = 100000 # number of random tests
+    # generate sampling data
+    attendence = my_distribution.rvs(**my_dist_args, size=(K,n), random_state=1240)
 
-fig, ax = plt.subplots(1,1,dpi=300, gridspec_kw=dict(left=0.15, right=0.95, bottom=0.15))
+    # calculate the accumulate mean and variance
+    # single_mean, single_var  = my_distribution.stats(**my_dist_args, moments='mv')
 
-uh = UpdateHistogram(ax, attendence, (0,n))
-number_list = [1,2,3,4,5,8,12,18,28,43,65,99,151,230,350]
-uh.set_frame_numbers = number_list
-uh.set_colors = plt.cm.Oranges(0.8*np.arange(len(number_list)/len(number_list)))
-
-anim = FuncAnimation(fig, uh, frames=16, interval=800, blit=True)
-anim.save('evolving_bernoulli.mp4', dpi=300, codec='mpeg4')
-# %%
-from moviepy.editor import *
-
-fname = "evolving_bernoulli.mp4"
-video = VideoFileClip(fname, audio=False)
-video = video.subclip(0,video.duration)
-#video = video.subclip(0,60)
-
-video.to_videofile(fname.split('.')[0]+'_recompressed.mp4', fps=24)
-# %%
-# draw static plots
-pm = {
-    'small': {
-        'idx':0,
-        'xlim':(-1,3),
-        'ylim':(0,1),
-    },
-    'median': {
-        'idx':6,
-        'xlim':(0,20),
-        'ylim':(0,0.5),
-    },
-    'large': {
-        'idx':14,
-        'xlim':(280,350),
-        'ylim':(0,0.1),
-    },
-}
-for key, val in pm.items():
     fig, ax = plt.subplots(1,1,dpi=300, gridspec_kw=dict(left=0.15, right=0.95, bottom=0.15))
+
     uh = UpdateHistogram(ax, attendence, (0,n))
-    idx = val['idx']
-    uh(idx)
-    uh.lines[0].set_alpha(0)
-    uh._draw_gauss(idx)
-    uh.lines[1].set_color('r')
-    ax.set_xlim(*val['xlim'])
-    ax.set_ylim(*val['ylim'])
-    ax.grid()
-    fig.savefig(f'n_{key:s}.pdf')
-# %%
+    number_list = [1,2,3,4,5,8,12,18,28,43,65,99,151,230,350]
+    uh.set_frame_numbers = number_list
+    uh.set_colors = plt.cm.Oranges(0.8*np.arange(len(number_list)/len(number_list)))
+
+    anim = FuncAnimation(fig, uh, frames=16, interval=800, blit=True)
+    fname = "evolving_bernoulli.mp4"
+    anim.save(fname, dpi=300, codec='mpeg4')
+
+    video = VideoFileClip(fname, audio=False)
+    video = video.subclip(0,video.duration)
+
+    video.to_videofile(fname.split('.')[0]+'_recompressed.mp4', fps=24)
