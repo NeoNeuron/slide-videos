@@ -25,8 +25,9 @@ class UpdateHistogram():
         self.bins = int(range[1]-range[0] + 1)
         self.range = [range[0]-0.5, range[1]+0.5]
         self.edges = np.linspace(*self.range, self.bins+1)
+        self.edge_centers = (self.edges[1:]+self.edges[:-1])/2
         self.rects = self.ax.bar(
-            (self.edges[1:]+self.edges[:-1])/2, np.zeros(self.bins),
+            self.edge_centers, np.zeros(self.bins),
             width = self.bar_width,
             color='#206864')
         # if mean is None or var is None:
@@ -59,21 +60,22 @@ class UpdateHistogram():
             idx = self.number_of_sample_list[i]
         margin = np.sum(self.data[:,:idx], axis=1, dtype=float)
 
-        counts, edges = np.histogram(margin, bins=self.bins, range=self.range, density=True)
+        counts, _ = np.histogram(margin, bins=self.bins, range=self.range, density=True)
         # counts /= counts.max()
         for rect, h, x in zip(self.rects, counts, self.edges):
             rect.set_x(x)
             rect.set_height(h)
         if i >= 0 and i < len(self.number_of_sample_list):
             # self._draw_gauss(i-1)
-            self._draw_conti_hist(counts, edges, i)
+            self._draw_conti_hist(counts, self.edges, i)
             self._recolor()
-        if i < 5:
-            self.ax.set_xlim(-0.5,11)
-        elif i < 10:
-            self.ax.set_xlim(-0.5,51)
-        else:
-            self.ax.set_xlim(-0.5,351)
+
+        # adjust xlim
+        last_nonzero_pos = self.edge_centers[counts > 0][-1]
+        xlim = self.ax.get_xlim()
+        if xlim[1]<=last_nonzero_pos:
+            self.ax.set_xlim(xlim[0], xlim[1]*2)
+        
         # dark red : '#B72C31'
         self.ax.set_title(f'售票数 : {idx:5d}', fontsize=20)
         return self.rects
@@ -83,7 +85,7 @@ class UpdateHistogram():
         gauss = Gaussian(margin.mean(), margin.std()**2)
         print(margin.mean(), margin.std()**2)
         line, = self.ax.plot(
-            (self.edges[1:]+self.edges[:-1])/2, gauss((self.edges[1:]+self.edges[:-1])/2), 
+            self.edge_centers, gauss(self.edge_centers), 
             ls='--', color=self.color[i],
             label='高斯拟合')
         self.lines.append(line)

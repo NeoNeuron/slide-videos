@@ -152,7 +152,7 @@ axHisty.yaxis.set_major_formatter(nullfmt)
 
 ud = UpdateDist(ax0, margin, axMain, axHisty, axHistx)
 anim = FuncAnimation(fig, ud, frames=101, interval=100, blit=True)
-anim.save('flight_movie.mp4', dpi=200, codec='mpeg4')
+anim.save('flight_movie.mp4', dpi=100, codec='mpeg4')
 # %%
 from moviepy.editor import *
 
