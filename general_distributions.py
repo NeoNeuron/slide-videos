@@ -2,10 +2,17 @@ if __name__ == '__main__':
     import numpy as np
     import matplotlib.pyplot as plt
     plt.rcParams['axes.labelsize'] = 16
-    from scipy.stats import poisson, geom, hypergeom, uniform, expon, norm
+    from scipy.stats import poisson, geom, hypergeom, uniform, expon, norm, cauchy
     from simulate_central_limit import UpdateHistogram
     from matplotlib.animation import FuncAnimation
     from moviepy.editor import *
+
+    theme_color = np.array([
+        [73,148,196],
+        [65,130,164],
+        [50,120,138],
+        [0,109,135],
+    ])
 
     my_dist_args = {
         'poisson': {
@@ -13,7 +20,8 @@ if __name__ == '__main__':
             'pm': {
                 'mu': 0.6,
             },
-            'range': (0,350),
+            'range': (-350,350),
+            'ylim': (0, 0.6),
         },
         'geom': {
             'gen': geom,
@@ -21,6 +29,7 @@ if __name__ == '__main__':
                 'p': 0.5,
             },
             'range': (0,800),
+            'ylim': (0, 0.6),
         },
         'hypergeom': {
             'gen': hypergeom,
@@ -30,21 +39,31 @@ if __name__ == '__main__':
                 'N': 12,
             },
             'range': (0,2000),
+            'ylim': (0, 0.4),
         },
         'uniform': {
             'gen': uniform,
             'pm': { },
             'range': (0,300),
+            'ylim': (0, 0.6),
         },
         'expon': {
             'gen': expon,
             'pm': { },
             'range': (0,450),
+            'ylim': (0, 0.4),
         },
         'norm': {
             'gen': norm,
             'pm': { },
             'range': (-350,350),
+            'ylim': (0, 0.4),
+        },
+        'cauchy': {
+            'gen': cauchy,
+            'pm': { },
+            'range': (-350,350),
+            'ylim': (0, 0.4),
         },
 
     }
@@ -61,6 +80,7 @@ if __name__ == '__main__':
         fig, ax = plt.subplots(1,1,dpi=300, gridspec_kw=dict(left=0.15, right=0.95, bottom=0.15))
 
         uh = UpdateHistogram(ax, attendence, item['range'])
+        uh.ax.set_ylim(*item['ylim'])
         number_list = [1,2,3,4,5,8,12,18,28,43,65,99,151,230,350]
         uh.set_frame_numbers = number_list
         uh.set_colors = plt.cm.Oranges(0.8*np.arange(len(number_list)/len(number_list)))

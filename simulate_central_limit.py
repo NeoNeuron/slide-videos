@@ -30,8 +30,6 @@ class UpdateHistogram():
             self.edge_centers, np.zeros(self.bins),
             width = self.bar_width,
             color='#206864')
-        # if mean is None or var is None:
-        #     raise RuntimeError("empty mean or var")
         # gauss = Gaussian(mean, var)
         # self.ax.plot(edges, gauss(edges), ls='--', color='#B72C31', label='高斯模型估计')
         # self.ax.set_ylim(0,gauss(edges).max()*1.2)
@@ -72,7 +70,10 @@ class UpdateHistogram():
 
         # adjust xlim
         last_nonzero_pos = self.edge_centers[counts > 0][-1]
+        first_nonzero_pos = self.edge_centers[counts > 0][0]
         xlim = self.ax.get_xlim()
+        if xlim[0]>=first_nonzero_pos:
+            self.ax.set_xlim(-xlim[1], xlim[1])
         if xlim[1]<=last_nonzero_pos:
             self.ax.set_xlim(xlim[0], xlim[1]*2)
         
