@@ -16,10 +16,14 @@ class UpdateHistogram():
     
     Bin size of histogram is 1.
     '''
-    def __init__(self, ax, data, range=(0,350), zscore = False, autolim=True, ):
+    def __init__(self, ax, data, range=(0,350), 
+        zscore = False, envelope_curve=False,
+        autolim=True, fade = False):
+
         self.ax = ax
         self.data = data
         self.zscore = zscore
+        self.envelope_curve=envelope_curve
         self.bar_width=1
         if range is None:
             raise RuntimeError('Missing range parameter.')
@@ -30,7 +34,7 @@ class UpdateHistogram():
         self.rects = self.ax.bar(
             self.edge_centers, np.zeros(self.bins),
             width = self.bar_width,
-            color='#206864')
+            color='#108B96')
         # gauss = Gaussian(mean, var)
         # self.ax.plot(edges, gauss(edges), ls='--', color='#B72C31', label='高斯模型估计')
         # self.ax.set_ylim(0,gauss(edges).max()*1.2)
@@ -57,10 +61,15 @@ class UpdateHistogram():
         self.ax.set_title(f'售票数 : {0:5d}', fontsize=20)
         self.number_of_sample_list = [1,2,3,4,5,8,12,18,28,43,65,99,151,230, 350]
         self.color = plt.cm.Oranges(0.8*np.arange(len(self.number_of_sample_list))/len(self.number_of_sample_list))
+        self.alpha = np.linspace(0.1, 0.8, self.color.shape[0])
+        self.alpha[-1]=1
+        self.fade = fade
         self.lines = []
 
     def set_colors(self, color_set):
         self.color = color_set
+        self.alpha = np.linspace(0.1, 0.8, self.color.shape[0])
+        self.alpha[-1]=1
 
     def set_frame_numbers(self, number_set):
         self.number_of_sample_list = number_set
@@ -72,13 +81,13 @@ class UpdateHistogram():
         else:
             idx = self.number_of_sample_list[i]
         margin = np.sum(self.data[:,:idx], axis=1, dtype=float)
+        bins = self.bins
         if self.zscore:
             scaling = margin.std()
+            # scaling = idx
+            range = ((val-margin.mean())/scaling for val in self.range)
             margin = (margin - margin.mean())/scaling
-            bins = self.bins
-            range = (val/scaling for val in self.range)
         else:
-            bins = self.bins
             range = self.range
 
         counts, edges = np.histogram(margin, bins=bins, range=range, density=True)
@@ -88,9 +97,13 @@ class UpdateHistogram():
             rect.set_x(x)
             rect.set_height(h)
             rect.set_width(width)
-        if i >= 0 and i < len(self.number_of_sample_list):
-            # self._draw_gauss(i-1)
-            self._draw_conti_hist(counts, edges, i)
+        if i >= 0 and i < len(self.number_of_sample_list) and self.envelope_curve:
+            if self.envelope_curve == 'gauss':
+                self._draw_gauss(i)
+            elif self.envelope_curve == 'joint':
+                self._draw_conti_hist(counts, edges, i)
+            else:
+                raise ValueError("Invalid argument for envelope_curve.")
             self._recolor()
 
         # adjust xlim
@@ -110,13 +123,12 @@ class UpdateHistogram():
                 self.ax.set_ylim(ylim[0], ylim[1]/5)
         
         # dark red : '#B72C31'
-        self.ax.set_title(f'售票数 : {idx:5d}', fontsize=20)
+        self.ax.set_title(self.ax.get_title()[:-5]+f'{idx:5d}', fontsize=20)
         return self.rects
 
     def _draw_gauss(self, i):
         margin = np.sum(self.data[:,:self.number_of_sample_list[i]], axis=1, dtype=float)
         gauss = Gaussian(margin.mean(), margin.std()**2)
-        print(margin.mean(), margin.std()**2)
         line, = self.ax.plot(
             self.edge_centers, gauss(self.edge_centers), 
             ls='--', color=self.color[i],
@@ -131,8 +143,10 @@ class UpdateHistogram():
         self.lines.append(line)
 
     def _recolor(self,):
-        for line, c in zip(self.lines, self.color[-len(self.lines):]):
+        for line, c, alpha in zip(self.lines, self.color[-len(self.lines):], self.alpha[-len(self.lines):]):
             line.set_color(c)
+            if self.fade:
+                line.set_alpha(alpha)
 
 
 if __name__ == '__main__':
@@ -140,11 +154,6 @@ if __name__ == '__main__':
 
     # Simulate Bernoulli random tests
 
-    # my_distribution = boltzmann
-    # my_dist_args = dict(
-    #     lambda_=1.4,
-    #     N = 19,
-    # )
     my_distribution = bernoulli
     my_dist_args = dict(
         p=0.9,
@@ -155,13 +164,24 @@ if __name__ == '__main__':
     # generate sampling data
     attendence = my_distribution.rvs(**my_dist_args, size=(K,n), random_state=1240)
 
-    # calculate the accumulate mean and variance
-    # single_mean, single_var  = my_distribution.stats(**my_dist_args, moments='mv')
+    fig, ax = plt.subplots(
+        1,1, figsize=(4,3.5), dpi=200, 
+        gridspec_kw=dict(left=0.18, right=0.95, bottom=0.24))
 
-    fig, ax = plt.subplots(1,1,dpi=300, gridspec_kw=dict(left=0.15, right=0.95, bottom=0.15))
-
-    uh = UpdateHistogram(ax, attendence, (-n,n), zscore=True, autolim=False)
+    zscore = False
+    uh = UpdateHistogram(
+        ax, attendence, (-n,n), 
+        zscore=zscore, autolim=not zscore, 
+        fade=False, envelope_curve='joint')
     uh.ax.set_ylim(0,0.5)
+    if zscore:
+        uh.ax.set_xlabel(r'$\frac{Y_n-EY_n}{\sqrt{DY_n}}$', fontsize=14)
+        x_grid = np.linspace(-10,10,400)
+        normal_curve = Gaussian(0,1)(x_grid)/(x_grid[1]-x_grid[0])
+        uh.ax.plot(x_grid, normal_curve, 'r')
+    else:
+        uh.ax.set_xlabel(r'$Y_n$', fontsize=14)
+    uh.ax.set_title(r'$n$ : '+uh.ax.get_title()[-5:], fontsize=20)
     number_list = [1,2,3,4,5,8,12,18,28,43,65,99,151,230,350]
     uh.set_frame_numbers = number_list
     uh.set_colors = plt.cm.Oranges(0.8*np.arange(len(number_list)/len(number_list)))
@@ -174,3 +194,5 @@ if __name__ == '__main__':
     video = video.subclip(0,video.duration)
 
     video.to_videofile(fname.split('.')[0]+'_recompressed.mp4', fps=24)
+
+# %%

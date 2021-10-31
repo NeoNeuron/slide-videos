@@ -3,7 +3,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     plt.rcParams['axes.labelsize'] = 16
     from scipy.stats import poisson, geom, hypergeom, uniform, expon, norm, cauchy
-    from simulate_central_limit import UpdateHistogram
+    from simulate_central_limit import UpdateHistogram, Gaussian
     from matplotlib.animation import FuncAnimation
     from moviepy.editor import *
 
@@ -28,7 +28,7 @@ if __name__ == '__main__':
             'pm': {
                 'p': 0.5,
             },
-            'range': (0,800),
+            'range': (-800,800),
             'ylim': (0, 0.6),
         },
         'hypergeom': {
@@ -38,19 +38,20 @@ if __name__ == '__main__':
                 'n': 7,
                 'N': 12,
             },
-            'range': (0,2000),
+            'range': (-2000,2000),
             'ylim': (0, 0.4),
         },
         'uniform': {
             'gen': uniform,
             'pm': { },
-            'range': (0,300),
+            'range': (-300,300),
             'ylim': (0, 0.6),
+            # 'xlim': (-5,5),
         },
         'expon': {
             'gen': expon,
             'pm': { },
-            'range': (0,450),
+            'range': (-450,450),
             'ylim': (0, 0.4),
         },
         'norm': {
@@ -59,28 +60,46 @@ if __name__ == '__main__':
             'range': (-350,350),
             'ylim': (0, 0.4),
         },
-        'cauchy': {
-            'gen': cauchy,
-            'pm': { },
-            'range': (-350,350),
-            'ylim': (0, 0.4),
-        },
+        # 'cauchy': {
+        #     'gen': cauchy,
+        #     'pm': { },
+        #     'range': (-350,350),
+        #     'ylim': (0, 0.4),
+        #     # 'xlim': (-10,10),
+        # },
 
     }
 
     n = 350 # number of accumulated samples
     K = 100000 # number of random tests
+    zscore=False
     for key, item in my_dist_args.items():
         # generate sampling data
         attendence = item['gen'].rvs(**item['pm'], size=(K,n), random_state=1240)
+        # for i in range(attendence.shape[1]):
+        #     attendence[:, i] = attendence[:,0]
 
-        # calculate the accumulate mean and variance
-        # single_mean, single_var  = my_distribution.stats(**my_dist_args, moments='mv')
+        fig, ax = plt.subplots(
+            1,1, figsize=(4,3.5), dpi=200, 
+            gridspec_kw=dict(left=0.18, right=0.95, bottom=0.24))
 
-        fig, ax = plt.subplots(1,1,dpi=300, gridspec_kw=dict(left=0.15, right=0.95, bottom=0.15))
-
-        uh = UpdateHistogram(ax, attendence, item['range'])
+        uh = UpdateHistogram(
+            ax, attendence, item['range'], 
+            zscore=zscore, autolim=not zscore, 
+            fade=zscore, envelope_curve='joint')
         uh.ax.set_ylim(*item['ylim'])
+        uh.ax.set_ylabel('概率密度')
+        if zscore:
+            uh.ax.set_xlabel(r'$\frac{1}{\sigma/\sqrt{n}}\left(\frac{1}{n}\sum_i^n X_i-\mu\right)$', fontsize=14)
+            x_grid = np.linspace(-10,10,400)
+            normal_curve = Gaussian(0,1)(x_grid)/(x_grid[1]-x_grid[0])
+            uh.ax.plot(x_grid, normal_curve, 'r')
+        else:
+            uh.ax.set_xlabel(r'$\sum_i^n X_i$', fontsize=14)
+        uh.ax.set_title(r'$n$ : '+uh.ax.get_title()[-5:], fontsize=20)
+        if 'xlim' in item:
+            uh.ax.set_xlim(*item['xlim'])
+
         number_list = [1,2,3,4,5,8,12,18,28,43,65,99,151,230,350]
         uh.set_frame_numbers = number_list
         uh.set_colors = plt.cm.Oranges(0.8*np.arange(len(number_list)/len(number_list)))
