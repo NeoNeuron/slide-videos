@@ -29,12 +29,12 @@ ax.axis('off')
 #%%
 
 class UpdateDist:
-    def __init__(self, ax, data, ax_main, ax_right, ax_top):
+    def __init__(self, ax, data, ax_main, ax_right, ax_top, days):
         self.ax = ax
-        xn, yn = 40, 10
+        xn, yn = 37, 10
         xx, yy = np.meshgrid(np.arange(xn), np.arange(yn))
-        self.sc_flight = self.ax.scatter(xx.flatten(),yy.flatten(), s=2000, facecolor=[0,0,0,1], marker=flight_marker)
-        self.color = np.tile([0,0,0,1],(int(xn*yn),1)).astype(float)
+        self.sc_flight = self.ax.scatter(xx.flatten()[:days],yy.flatten()[:days], s=2000, facecolor=[0,0,0,1], marker=flight_marker)
+        self.color = np.tile([0,0,0,1],(int(days),1)).astype(float)
         self.ax.set_xlim(-1,xn)
         self.ax.set_ylim(-1,yn)
         self.ax.invert_yaxis()
@@ -42,10 +42,11 @@ class UpdateDist:
         self.day_data = np.arange(data.shape[0])+1
 
         # main plot:
-        self.line_main, = ax_main.plot([], [], '-o',
-                markersize=6,
-                markerfacecolor='none',
-                markeredgewidth=2)
+        self.line_main, = ax_main.plot([], [], 'o',
+            color='#006D87',
+            markersize=6,
+            markerfacecolor='none',
+            markeredgewidth=2)
         ax_main.set_xlabel('日期', fontsize=40)
         ax_main.set_ylabel('登机人数', fontsize=40)
         # ax_main.grid(linestyle='--')
@@ -64,9 +65,9 @@ class UpdateDist:
         self.bins = int(ylim[1]-ylim[0] + 1)
         self.range = [ylim[0]-0.5, ylim[1]+0.5]
         counts, edges = np.histogram(data, range=self.range, bins = self.bins)
-        self.rects = ax_right.barh((edges[1:]+edges[:-1])/2, np.zeros_like(counts), color='#206864')
+        self.rects = ax_right.barh((edges[1:]+edges[:-1])/2, np.zeros_like(counts), color='#006D87')
         self.data_line_top = (np.cumsum(data<=300)/(np.arange(data.shape[0])+1))*100
-        self.line_top, = ax_top.plot([],[])
+        self.line_top, = ax_top.plot([],[], color='#006D87', lw=5)
         ax_top.set_ylabel('乘客均有座概率(%)', fontsize=40)
         ax_right.set_xlabel('天数', fontsize=40)
 
@@ -82,7 +83,7 @@ class UpdateDist:
         gauss_curve = func(y_grid, 0.9*seats, 0.09*seats)
         gauss_curve /= np.sum(gauss_curve*(y_grid[1]-y_grid[0]))
         gauss_curve *= days
-        ax_right.plot(gauss_curve, y_grid, color='#B72C31',)
+        ax_right.plot(gauss_curve, y_grid, color='#B15A43', lw=5)
 
         self.ax_top= ax_top
         self.ax_right= ax_right
@@ -92,7 +93,7 @@ class UpdateDist:
         # watching new realizations of the process
 
         if i > 0:
-            n_inc = 4
+            n_inc = 5
             # update lines
             idx = (i)*n_inc
             self.line_main.set_data(self.day_data[:idx], self.data[:idx])
@@ -105,7 +106,7 @@ class UpdateDist:
             for j in np.arange(n_inc):
                 # idx = i-1
                 idx = (i-1)*n_inc+j
-                self.color[idx,:] = [228./255,131./255,18./255,1] if self.data[idx]>300 else [0,176./255,80./255,1]
+                self.color[idx,:] = [230./255,0./255,18./255,1] if self.data[idx]>300 else [0,176./255,80./255,1]
             self.sc_flight.set_facecolor(self.color)
         return self.rects
 # %%
@@ -121,7 +122,7 @@ K = 100000 # number of random tests
 single_mean, single_var  = my_distribution.stats(**my_dist_args, moments='mv')
 # generate sampling data
 attendence = my_distribution.rvs(**my_dist_args, size=(K,n), random_state=99239)
-days = 400
+days = 365
 seats = 319
 margin = np.sum(attendence[100:100+days,:seats], axis=1, dtype=float)
 
@@ -150,8 +151,8 @@ axHisty = plt.axes(rect_histy)
 axHistx.xaxis.set_major_formatter(nullfmt)
 axHisty.yaxis.set_major_formatter(nullfmt)
 
-ud = UpdateDist(ax0, margin, axMain, axHisty, axHistx)
-anim = FuncAnimation(fig, ud, frames=101, interval=100, blit=True)
+ud = UpdateDist(ax0, margin, axMain, axHisty, axHistx, days)
+anim = FuncAnimation(fig, ud, frames=74, interval=150, blit=True)
 anim.save('flight_movie.mp4', dpi=100, codec='mpeg4')
 # %%
 from moviepy.editor import *
