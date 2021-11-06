@@ -18,13 +18,15 @@ class UpdateHistogram():
     '''
     def __init__(self, ax, data, range=(0,350), 
         zscore = False, envelope_curve=False,
-        autolim=True, fade = False):
+        autolim=True, fade = False,
+        xlabel_scale=False):
 
         self.ax = ax
         self.data = data
         self.zscore = zscore
         self.envelope_curve=envelope_curve
         self.bar_width=1
+        self.xlabel_scale = xlabel_scale
         if range is None:
             raise RuntimeError('Missing range parameter.')
         self.bins = int((range[1]-range[0] + 1)/self.bar_width)
@@ -56,6 +58,8 @@ class UpdateHistogram():
             self.ax.set_xlim(-10,10)
         else:
             self.ax.set_xlim(-0.5,51)
+        if self.xlabel_scale:
+            self.ax.set_xticklabels(self.ax.get_xticks()*self.xlabel_scale)
         self.ax.set_ylabel('概率密度')
         self.ax.set_xlabel('真实上座人数')
         self.ax.set_title(f'售票数 : {0:5d}', fontsize=20)
@@ -113,8 +117,12 @@ class UpdateHistogram():
             xlim = self.ax.get_xlim()
             if xlim[0]>=first_nonzero_pos:
                 self.ax.set_xlim(-xlim[1], xlim[1])
+                if self.xlabel_scale:
+                    self.ax.set_xticklabels(self.ax.get_xticks()*self.xlabel_scale)
             if xlim[1]<=last_nonzero_pos:
                 self.ax.set_xlim(xlim[0], xlim[1]*2)
+                if self.xlabel_scale:
+                    self.ax.set_xticklabels(self.ax.get_xticks()*self.xlabel_scale)
 
         # adjust ylim
         if self.autoylim:
