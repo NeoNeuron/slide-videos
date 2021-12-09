@@ -27,11 +27,11 @@ def gen_marker(fname, rotation=180, flip=False):
         person_marker = person_marker.transformed(trans)
     return person_marker
 
-coin_front_marker = gen_marker('bitcoin_front.svg',0, flip=True)
-coin_back_marker = gen_marker('bitcoin_back.svg',)
+coin_front_marker = gen_marker('yuan_front.svg',0, flip=True)
+coin_back_marker = gen_marker('yuan_back.svg',0,)
 #%%
 # test marker
-plt.scatter([0],[0],  s=10000, color='k', marker=coin_front_marker)
+plt.scatter([0],[0],  s=10000, color='k', marker=coin_back_marker)
 plt.gca().axis('off')
 #%%
 
@@ -76,8 +76,6 @@ class UpdateDist:
         self.ax_main.axhline(0.5, ls='--', color='r')
         self.bar = self.ax_main.bar([],[])
 
-        
-
 
     def __call__(self, i):
         # This way the plot can continuously run and we just keep
@@ -113,32 +111,124 @@ class UpdateDist:
             self.coin_front.set_data(self.coin_front_data[0], self.coin_front_data[1])
             self.coin_back.set_data(self.coin_back_data[0], self.coin_back_data[1])
         return self.bar
+
+class UpdateDist:
+    def __init__(self, ax, data, ax_main, n_in_each_frame):
+        self.ax = ax
+        self.n_in_each_frame = n_in_each_frame
+        # self.coin_front = self.ax.scatter([-1],[0],  s=200, facecolor=[230./255,0./255,18./255,1], marker=coin_front_marker)
+        # self.coin_back = self.ax.scatter([1],[0],  s=200, facecolor=[0,176./255,80./255,1], marker=coin_back_marker)
+        self.coin_front = self.ax.scatter([0],[-1],s=10000, facecolor='k', marker=coin_front_marker)
+        self.coin_back = self.ax.scatter([0],[1],  s=10000, facecolor='k', marker=coin_back_marker)
+        self.ax.set_xlim(-1,1)
+        self.ax.set_ylim(-2,2)
+        self.ax.invert_yaxis()
+        self.data = data
+        self.cummean = np.cumsum(self.data)/np.arange(1, data.shape[0]+1)
+        self.day_data = np.arange(1, data.shape[0]+1)
+
+        # main plot:
+        self.line_main, = ax_main.plot([], [], '-o',
+            color='#006D87',
+            markersize=6,
+            markerfacecolor='none',
+            markeredgewidth=2)
+        ax_main.set_xlabel('抛硬币次数', fontsize=40)
+        ax_main.set_ylabel('正面朝上概率', fontsize=40)
+        # ax_main.grid(linestyle='--')
+
+        # now determine nice limits by hand:
+        ymax = np.max(np.fabs(self.cummean))
+        ymin = np.min(np.fabs(self.cummean))
+        xlim = (-1, (data.shape[0])/100)
+        ylim = (ymin*0.95, ymax*1.05)
+
+        self.xlim0 = xlim
+        self.ylim0 = np.array([0.1,0.8])
+        ax_main.set_xlim(xlim)
+        ax_main.set_ylim(self.ylim0)
+
+        self.ax_main = ax_main
+        self.ax_main.axhline(0.5, ls='--', color='r')
+        self.bar = self.ax_main.bar([],[])
+
+    def __call__(self, i):
+        # This way the plot can continuously run and we just keep
+        # watching new realizations of the process
+
+        if i > 0:
+            n_inc = 1000
+            # update lines
+            idx = self.n_in_each_frame[i]
+            self.line_main.set_data(self.day_data[:idx], self.cummean[:idx])
+            if idx < self.data.shape[0]:
+                xlim = np.array(self.ax_main.get_xlim())
+                # ylim = np.array(self.ax_main.get_ylim())
+                if self.day_data[idx] >= xlim[1]:
+                    xlim[1] += self.xlim0[1]-self.xlim0[0]
+                    self.ax_main.set_xlim(xlim)
+                    self.ax_main.set_ylim((self.ylim0-0.5)*20/np.sqrt(self.ax_main.get_xlim()[1])+0.5)
+            # if i % 10 == 0:
+            #     ylim = np.array(self.ax_main.get_ylim())
+            #     self.ax_main.set_ylim((ylim-0.5)*.8+0.5)
+            
+            # update scatter facecolor
+            if idx >= self.data.shape[0]:
+                self.coin_front.set_color('k')
+                self.coin_back.set_color('k')
+            else:
+                if self.data[idx]>0:
+                    self.coin_front.set_color('g')
+                    self.coin_back.set_color('k')
+                else:
+                    self.coin_front.set_color('k')
+                    self.coin_back.set_color('g')
+        return self.bar
 # %%
 my_distribution = bernoulli
 my_dist_args = dict(
     p=0.5,
 )
 
-n = 1200 # number of accumulated samples
+n = 120000 # number of accumulated samples
 
 # calculate the accumulate mean and variance
 single_mean, single_var  = my_distribution.stats(**my_dist_args, moments='mv')
 # generate sampling data
 flip_results = my_distribution.rvs(**my_dist_args, size=(n,), random_state=99239)
 
-fig, ax = plt.subplots(1,2,figsize=(30,10),dpi=100, gridspec_kw=dict(left=0.04, right=0.96, top=0.92, bottom=0.12))
-ax[0].axis('off')
+fig = plt.figure(figsize=(15,5),dpi=200)
+spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.02, right=0.2, top=0.98, bottom=0.12, figure=fig)
+ax0 = fig.add_subplot(spec1[0])
+ax0.axis('off')
+spec2 = gridspec.GridSpec(ncols=1, nrows=1, left=0.32, right=0.96, top=0.95, bottom=0.20, figure=fig)
+ax1 = fig.add_subplot(spec2[0])
 
-ud = UpdateDist(ax[0], flip_results, ax[1])
-anim = FuncAnimation(fig, ud, frames=120, interval=100, blit=True)
+factor = np.arange(20)
+for i in range(10):
+    if i == 0:
+        n_in_each_frame = factor.copy()
+    else:
+        n_in_each_frame = np.append(n_in_each_frame, factor*10*(i+1)+n_in_each_frame[-1])
+
+ud = UpdateDist(ax0, flip_results, ax1, n_in_each_frame)
+anim = FuncAnimation(fig, ud, frames=n_in_each_frame.shape[0], interval=150, blit=True)
 fname = "flipping_coin_movie.mp4"
 anim.save(fname, dpi=100, codec='mpeg4')
 # %%
-
+# test bining sequence
+factor = np.arange(20)
+for i in range(10):
+    if i == 0:
+        n_in_each_frame = factor.copy()
+    else:
+        n_in_each_frame = np.append(n_in_each_frame, factor*10*(i+1)+n_in_each_frame[-1])
+plt.plot(n_in_each_frame)
+# %%
 video = VideoFileClip(fname, audio=False)
 video = video.subclip(0,video.duration)
 
-video.to_videofile(fname, fps=24)
+video.to_videofile(fname.split('.')[0] + '_recompressed.mp4', fps=24)
 
 
 # %%

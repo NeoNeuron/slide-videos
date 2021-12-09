@@ -156,6 +156,72 @@ class UpdateHistogram():
             if self.fade:
                 line.set_alpha(alpha)
 
+class UpdateCurve():
+    '''Update curve.
+    
+    '''
+    def __init__(self, ax, data,
+        autolim=True, xlabel_scale=False):
+
+        self.ax = ax
+        self.data = data
+        self.n_grid = np.arange(self.data.shape[0])
+        self.bar_width=1
+        self.xlabel_scale = xlabel_scale
+        self.rects = self.ax.bar([],[])
+        self.line, = self.ax.plot([],[],'-o', ms=3)
+        if autolim:
+            if autolim == 'x':
+                self.autoxlim = True
+                self.autoylim = False
+            elif autolim == 'y':
+                self.autoxlim = False
+                self.autoylim = True
+            else:
+                self.autoxlim=self.autoylim=True
+        else:
+            self.autoxlim=self.autoylim=False
+        self.ax.set_ylim(data.min(),data.max())
+        self.ax.set_xlim(-0.5,51)
+        if self.xlabel_scale:
+            self.ax.set_xticklabels(self.ax.get_xticks()*self.xlabel_scale)
+        self.ax.set_ylabel('算术平均值')
+        self.ax.set_xlabel('样本数 n')
+        self.ax.set_title(f'n = : {0:5d}', fontsize=20)
+        self.number_of_sample_list = np.array([1,2,3,4,5,8,12,18,28,43,65,99,151,230, 350])
+
+    def __call__(self, i):
+        if i>= len(self.number_of_sample_list):
+            idx = self.number_of_sample_list[-1]
+        else:
+            idx = self.number_of_sample_list[i]
+        self.line.set_data(self.n_grid[:idx], self.data[:idx])
+
+        # adjust xlim
+        if self.autoxlim:
+            if idx<self.n_grid.shape[0]:
+                last_nonzero_pos = self.n_grid[idx]
+                xlim = self.ax.get_xlim()
+                # if xlim[0]>=first_nonzero_pos:
+                #     self.ax.set_xlim(-xlim[1], xlim[1])
+                #     if self.xlabel_scale:
+                #         self.ax.set_xticklabels(self.ax.get_xticks()*self.xlabel_scale)
+                if xlim[1]<=last_nonzero_pos:
+                    self.ax.set_xlim(xlim[0], xlim[1]*2)
+                    if self.xlabel_scale:
+                        self.ax.set_xticklabels(self.ax.get_xticks()*self.xlabel_scale)
+
+        # # adjust ylim
+        # if self.autoylim:
+        #     ylim = self.ax.get_ylim()
+        #     if ylim[1]>=10*self.data[:idx].max():
+        #         self.ax.set_ylim(ylim[0], ylim[1]/5)
+        
+        self.ax.set_title(self.ax.get_title()[:-5]+f'{idx:5d}', fontsize=20)
+        return self.rects
+
+    def set_frame_numbers(self, number_set):
+        self.number_of_sample_list = number_set
 
 if __name__ == '__main__':
     from moviepy.editor import *
