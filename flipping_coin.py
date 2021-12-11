@@ -118,9 +118,9 @@ class UpdateDist:
         self.n_in_each_frame = n_in_each_frame
         # self.coin_front = self.ax.scatter([-1],[0],  s=200, facecolor=[230./255,0./255,18./255,1], marker=coin_front_marker)
         # self.coin_back = self.ax.scatter([1],[0],  s=200, facecolor=[0,176./255,80./255,1], marker=coin_back_marker)
-        self.coin_front = self.ax.scatter([0],[-1],s=10000, facecolor='k', marker=coin_front_marker)
-        self.coin_back = self.ax.scatter([0],[1],  s=10000, facecolor='k', marker=coin_back_marker)
-        self.ax.set_xlim(-1,1)
+        self.coin_front = self.ax.scatter([0],[-1],s=8000, facecolor='k', marker=coin_front_marker)
+        self.coin_back = self.ax.scatter([0],[1],  s=8000, facecolor='k', marker=coin_back_marker)
+        self.ax.set_xlim(-0.8,1)
         self.ax.set_ylim(-2,2)
         self.ax.invert_yaxis()
         self.data = data
@@ -130,11 +130,11 @@ class UpdateDist:
         # main plot:
         self.line_main, = ax_main.plot([], [], '-o',
             color='#006D87',
-            markersize=6,
+            markersize=3,
             markerfacecolor='none',
-            markeredgewidth=2)
-        ax_main.set_xlabel('抛硬币次数', fontsize=40)
-        ax_main.set_ylabel('正面朝上概率', fontsize=40)
+            markeredgewidth=1)
+        ax_main.set_xlabel('抛硬币次数', fontsize=25)
+        ax_main.set_ylabel('正面朝上概率', fontsize=25)
         # ax_main.grid(linestyle='--')
 
         # now determine nice limits by hand:
@@ -197,11 +197,11 @@ single_mean, single_var  = my_distribution.stats(**my_dist_args, moments='mv')
 # generate sampling data
 flip_results = my_distribution.rvs(**my_dist_args, size=(n,), random_state=99239)
 
-fig = plt.figure(figsize=(15,5),dpi=200)
-spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.02, right=0.2, top=0.98, bottom=0.12, figure=fig)
+fig = plt.figure(figsize=(9,3),dpi=400)
+spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.01, right=0.16, top=0.98, bottom=0.12, figure=fig)
 ax0 = fig.add_subplot(spec1[0])
 ax0.axis('off')
-spec2 = gridspec.GridSpec(ncols=1, nrows=1, left=0.32, right=0.96, top=0.95, bottom=0.20, figure=fig)
+spec2 = gridspec.GridSpec(ncols=1, nrows=1, left=0.30, right=0.98, top=0.95, bottom=0.25, figure=fig)
 ax1 = fig.add_subplot(spec2[0])
 
 factor = np.arange(20)
@@ -214,7 +214,7 @@ for i in range(10):
 ud = UpdateDist(ax0, flip_results, ax1, n_in_each_frame)
 anim = FuncAnimation(fig, ud, frames=n_in_each_frame.shape[0], interval=150, blit=True)
 fname = "flipping_coin_movie.mp4"
-anim.save(fname, dpi=100, codec='mpeg4')
+anim.save(fname, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
 # test bining sequence
 factor = np.arange(20)
