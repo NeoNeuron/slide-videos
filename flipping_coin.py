@@ -50,7 +50,7 @@ class UpdateDist:
         self.ax.set_ylim(-1,yn)
         self.ax.invert_yaxis()
         self.data = data
-        self.cummean = np.cumsum(self.data)/np.arange(1, data.shape[0]+1)
+        self.cummean = np.cumsum(self.data)/np.arange(1, data.shape[0]+1, dtype=float)
         self.day_data = np.arange(1, data.shape[0]+1)
 
         # main plot:
@@ -133,8 +133,9 @@ class UpdateDist:
             markersize=3,
             markerfacecolor='none',
             markeredgewidth=1)
-        ax_main.set_xlabel('抛硬币次数', fontsize=25)
-        ax_main.set_ylabel('正面朝上概率', fontsize=25)
+        ax_main.set_xlabel('抛币次数(n)', fontsize=20)
+        ax_main.set_ylabel('正面朝上频率(p)', fontsize=20)
+        ax_main.set_title(f'n = {0:<5d}    p = {0:<8.5f}', fontsize=20)
         # ax_main.grid(linestyle='--')
 
         # now determine nice limits by hand:
@@ -183,6 +184,8 @@ class UpdateDist:
                 else:
                     self.coin_front.set_color('k')
                     self.coin_back.set_color('g')
+            # self.ax_main.set_title(f'n = {idx:<5d}    p = {np.abs(self.cummean[idx-1]-0.5):<8.5f}', fontsize=20)
+            self.ax_main.set_title(f'n = {idx:<5d}    p = {self.cummean[idx-1]:<8.5f}', fontsize=20)
         return self.bar
 # %%
 my_distribution = bernoulli
@@ -195,13 +198,13 @@ n = 120000 # number of accumulated samples
 # calculate the accumulate mean and variance
 single_mean, single_var  = my_distribution.stats(**my_dist_args, moments='mv')
 # generate sampling data
-flip_results = my_distribution.rvs(**my_dist_args, size=(n,), random_state=99239)
+flip_results = my_distribution.rvs(**my_dist_args, size=(n,), random_state=939)
 
 fig = plt.figure(figsize=(9,3),dpi=400)
 spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.01, right=0.16, top=0.98, bottom=0.12, figure=fig)
 ax0 = fig.add_subplot(spec1[0])
 ax0.axis('off')
-spec2 = gridspec.GridSpec(ncols=1, nrows=1, left=0.30, right=0.98, top=0.95, bottom=0.25, figure=fig)
+spec2 = gridspec.GridSpec(ncols=1, nrows=1, left=0.30, right=0.98, top=0.85, bottom=0.25, figure=fig)
 ax1 = fig.add_subplot(spec2[0])
 
 factor = np.arange(20)
@@ -209,10 +212,12 @@ for i in range(10):
     if i == 0:
         n_in_each_frame = factor.copy()
     else:
-        n_in_each_frame = np.append(n_in_each_frame, factor*10*(i+1)+n_in_each_frame[-1])
+        n_in_each_frame = np.append(n_in_each_frame, factor*40*(i+1)+n_in_each_frame[-1])
+
+n_in_each_frame = np.sort(np.append(n_in_each_frame, [2084, 4040, 12000, 24000]))
 
 ud = UpdateDist(ax0, flip_results, ax1, n_in_each_frame)
-anim = FuncAnimation(fig, ud, frames=n_in_each_frame.shape[0], interval=150, blit=True)
+anim = FuncAnimation(fig, ud, frames=n_in_each_frame.shape[0]-5, interval=150, blit=True)
 fname = "flipping_coin_movie.mp4"
 anim.save(fname, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
