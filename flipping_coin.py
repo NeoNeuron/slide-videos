@@ -26,8 +26,8 @@ def gen_marker(fname, rotation=180, flip=False):
         person_marker = person_marker.transformed(trans)
     return person_marker
 
-coin_front_marker = gen_marker('yuan_front.svg',0, flip=True)
-coin_back_marker = gen_marker('yuan_back.svg',0,)
+coin_front_marker = gen_marker('icons/yuan_front.svg',0, flip=True)
+coin_back_marker = gen_marker('icons/yuan_back.svg',0,)
 #%%
 # test marker
 plt.scatter([0],[0],  s=10000, color='k', marker=coin_back_marker)

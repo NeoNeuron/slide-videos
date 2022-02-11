@@ -19,7 +19,7 @@ def gen_marker(fname, rotation=180):
     person_marker = person_marker.transformed(mpl.transforms.Affine2D().scale(-1,1))
     return person_marker
 
-flight_marker = gen_marker('flight.svg',0)
+flight_marker = gen_marker('icons/flight.svg',0)
 #%%
 # test marker
 xx, yy = np.meshgrid(np.arange(10), np.arange(10))
