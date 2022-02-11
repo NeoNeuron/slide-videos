@@ -6,7 +6,6 @@ if __name__ == '__main__':
     from scipy.stats import bernoulli, uniform, norm
     from simulate_central_limit import UpdateHistogram, Gaussian
     from matplotlib.animation import FuncAnimation
-    from moviepy.editor import *
 
     ticket_price = 1
     my_dist_args = {
@@ -77,14 +76,9 @@ if __name__ == '__main__':
     uh.set_frame_numbers = number_list
     uh.set_colors = plt.cm.Oranges(0.8*np.arange(len(number_list)/len(number_list)))
 
-    anim = FuncAnimation(fig, uh, frames=16, interval=800, blit=True)
+    anim = FuncAnimation(fig, uh, frames=16, blit=True)
     if zscore:
         fname = f"evolving_joint_norm.mp4"
     else:
         fname = f"evolving_joint.mp4"
-    anim.save(fname, dpi=200, codec='mpeg4')
-
-    video = VideoFileClip(fname, audio=False)
-    video = video.subclip(0,video.duration)
-
-    video.to_videofile(fname.split('.')[0]+'_recompressed.mp4', fps=24)
+    anim.save(fname, fps=1, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])

@@ -188,16 +188,6 @@ axHistx.xaxis.set_major_formatter(nullfmt)
 axHisty.yaxis.set_major_formatter(nullfmt)
 
 ud = UpdateDist(ax0, margin, axMain, axHisty, axHistx, days, threshold)
-anim = FuncAnimation(fig, ud, frames=74, interval=150, blit=True)
-anim.save('flight_movie_money.mp4', dpi=100, codec='mpeg4')
-# %%
-from moviepy.editor import *
-
-fname = "flight_movie_money.mp4"
-video = VideoFileClip(fname, audio=False)
-video = video.subclip(0,video.duration)
-
-video.to_videofile(fname.split('.')[0]+'_recompressed.mp4', fps=24)
-
-
+anim = FuncAnimation(fig, ud, frames=74, blit=True)
+anim.save('flight_movie_money.mp4', fps=12, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%

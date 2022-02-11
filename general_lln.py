@@ -5,7 +5,6 @@ if __name__ == '__main__':
     from scipy.stats import poisson, geom, hypergeom, uniform, expon, norm, cauchy
     from simulate_central_limit import UpdateCurve
     from matplotlib.animation import FuncAnimation
-    from moviepy.editor import *
 
     theme_color = np.array([
         [73,148,196],
@@ -96,11 +95,6 @@ if __name__ == '__main__':
         n_in_each_frame = n_in_each_frame[:-2]
         uh.set_frame_numbers(n_in_each_frame+1)
 
-        anim = FuncAnimation(fig, uh, frames=n_in_each_frame.shape[0], interval=100, blit=True)
+        anim = FuncAnimation(fig, uh, frames=n_in_each_frame.shape[0], blit=True)
         fname = f"evolving_{key:s}.mp4"
-        anim.save(fname, dpi=200, codec='mpeg4')
-
-        video = VideoFileClip(fname, audio=False)
-        video = video.subclip(0,video.duration)
-
-        video.to_videofile(fname.split('.')[0]+'_recompressed.mp4', fps=24)
+        anim.save(fname, fps=10, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])

@@ -57,7 +57,7 @@ class UpdateHistogram():
         if self.zscore:
             self.ax.set_xlim(-10,10)
         else:
-            self.ax.set_xlim(-0.5,51)
+            self.ax.set_xlim(-0.5,26)
         if self.xlabel_scale:
             self.ax.set_xticklabels(self.ax.get_xticks()*self.xlabel_scale)
         self.ax.set_ylabel('概率密度')
@@ -182,7 +182,7 @@ class UpdateCurve():
         else:
             self.autoxlim=self.autoylim=False
         self.ax.set_ylim(data.min(),data.max())
-        self.ax.set_xlim(-0.5,51)
+        self.ax.set_xlim(-0.5,26)
         if self.xlabel_scale:
             self.ax.set_xticklabels(self.ax.get_xticks()*self.xlabel_scale)
         self.ax.set_ylabel('算术平均值')
@@ -224,8 +224,6 @@ class UpdateCurve():
         self.number_of_sample_list = number_set
 
 if __name__ == '__main__':
-    from moviepy.editor import *
-
     # Simulate Bernoulli random tests
 
     my_distribution = bernoulli
@@ -260,13 +258,8 @@ if __name__ == '__main__':
     uh.set_frame_numbers = number_list
     uh.set_colors = plt.cm.Oranges(0.8*np.arange(len(number_list)/len(number_list)))
 
-    anim = FuncAnimation(fig, uh, frames=16, interval=800, blit=True)
+    anim = FuncAnimation(fig, uh, frames=16, blit=True)
     fname = "evolving_bernoulli.mp4"
-    anim.save(fname, dpi=200, codec='mpeg4')
-
-    video = VideoFileClip(fname, audio=False)
-    video = video.subclip(0,video.duration)
-
-    video.to_videofile(fname.split('.')[0]+'_recompressed.mp4', fps=24)
+    anim.save(fname, fps=1, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 
 # %%

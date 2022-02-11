@@ -4,13 +4,12 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.animation import FuncAnimation
-from scipy.stats import binom, bernoulli, boltzmann
+from scipy.stats import bernoulli
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
 plt.rcParams["font.size"] = 20
 plt.rcParams["xtick.labelsize"] = 24
 plt.rcParams["ytick.labelsize"] = 24
-from moviepy.editor import *
 
 def gen_marker(fname, rotation=180, flip=False):
     person_path, attributes = svg2paths(fname)
@@ -217,9 +216,9 @@ for i in range(10):
 n_in_each_frame = np.sort(np.append(n_in_each_frame, [2084, 4040, 12000, 24000]))
 
 ud = UpdateDist(ax0, flip_results, ax1, n_in_each_frame)
-anim = FuncAnimation(fig, ud, frames=n_in_each_frame.shape[0]-5, interval=150, blit=True)
+anim = FuncAnimation(fig, ud, frames=n_in_each_frame.shape[0]-5, blit=True)
 fname = "flipping_coin_movie.mp4"
-anim.save(fname, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(fname, fps=10, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
 # test bining sequence
 factor = np.arange(20)
@@ -229,11 +228,4 @@ for i in range(10):
     else:
         n_in_each_frame = np.append(n_in_each_frame, factor*10*(i+1)+n_in_each_frame[-1])
 plt.plot(n_in_each_frame)
-# %%
-video = VideoFileClip(fname, audio=False)
-video = video.subclip(0,video.duration)
-
-video.to_videofile(fname.split('.')[0] + '_recompressed.mp4', fps=24)
-
-
 # %%
