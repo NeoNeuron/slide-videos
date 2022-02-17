@@ -34,16 +34,26 @@ class UpdateFigure:
         self.ax[0].spines["right"].set_visible(True)
         self.dot, =self.ax[0].plot([0],[0], 'o', color='#FFF600', ms=2, zorder=1)
 
-        self.ax[1].set_xlim(0,data.shape[0])
+        self.ax[1].set_xlim(0,data.shape[1])
         self.ax[1].set_ylim(0,2)
         self.ax[1].set_xlabel('时间')
         self.ax[1].set_ylabel('距离')
-        self.data = data
-        self.line_symbolic =self.ax[1].plot(np.arange(data.shape[0]),dx*np.sqrt(np.arange(data.shape[0])), ls='--', color='grey')
-        self.line, =self.ax[1].plot([],[])
+        self.data = data[0]
+        self.line_symbolic =self.ax[1].plot(np.arange(data.shape[1]),dx*np.sqrt(np.arange(data.shape[1])), ls='--', color='k')
+        self.line, =self.ax[1].plot([],[], zorder=1, color='#B72C31')
         self.xc = 0.0
         self.yc = 0.0
         self.dx = dx
+        # Draw all samples
+        dx_all = self.dx*np.cos(data*np.pi*2)
+        dy_all = self.dx*np.sin(data*np.pi*2)
+        x_all = np.hstack((np.zeros((data.shape[0], 1)),np.cumsum(dx_all, axis=1)))
+        y_all = np.hstack((np.zeros((data.shape[0], 1)),np.cumsum(dy_all, axis=1)))
+        [self.ax[0].plot(x, y, color='grey', alpha=0.5, lw=0.5, zorder=0) for x, y in zip(x_all, y_all)]
+        dis_all = self.dis2o(x_all, y_all)
+        [self.ax[1].plot(dis, color='grey', alpha=0.5, lw=0.4, zorder=0) for dis in dis_all]
+
+
 
     @staticmethod
     def dis2o(x, y):
@@ -76,7 +86,7 @@ class UpdateFigure:
 fig, ax = plt.subplots(1,2, figsize=(12,3),dpi=200, gridspec_kw=dict(width_ratios=[1,4], left=0.05, right=0.95, bottom=0.2))
 
 np.random.seed(2022)
-data = np.random.rand(400)
+data = np.random.rand(100, 400)
 
 # create a figure updater
 ud = UpdateFigure(ax, data, dx=0.05)
