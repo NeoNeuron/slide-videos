@@ -1,6 +1,5 @@
 # %%
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 # matplotlib parameters to ensure correctness of Chinese characters 
