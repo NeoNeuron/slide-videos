@@ -165,7 +165,7 @@ margin = np.sum(attendence[100:100+days,:seats], axis=1, dtype=float)
 from matplotlib.ticker import NullFormatter 
 nullfmt = NullFormatter()         # no labels
 
-fig = plt.figure(figsize=(30,20),dpi=100)
+fig = plt.figure(figsize=(30,20),dpi=200)
 spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.04, right=0.96, top=0.98, bottom=0.60, figure=fig)
 ax0 = fig.add_subplot(spec1[0])
 ax0.axis('off')
@@ -189,5 +189,5 @@ axHisty.yaxis.set_major_formatter(nullfmt)
 
 ud = UpdateDist(ax0, margin, axMain, axHisty, axHistx, days, threshold)
 anim = FuncAnimation(fig, ud, frames=74, blit=True)
-anim.save('flight_movie_money.mp4', fps=12, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save('flight_movie_money.mp4', fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%

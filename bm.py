@@ -7,9 +7,9 @@ plt.rcParams["font.family"] = 'sans-serif'
 plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
 plt.rcParams['axes.unicode_minus']=False # correct minus sign
 
-plt.rcParams["font.size"] = 16
-plt.rcParams["xtick.labelsize"] = 16
-plt.rcParams["ytick.labelsize"] = 16
+plt.rcParams["font.size"] = 20
+plt.rcParams["xtick.labelsize"] = 12
+plt.rcParams["ytick.labelsize"] = 12
 plt.rcParams["axes.spines.top"] = False
 plt.rcParams["axes.spines.right"] = False
 #%%
@@ -37,6 +37,9 @@ class UpdateFigure:
         self.ax[1].set_ylim(0,2)
         self.ax[1].set_xlabel('时间')
         self.ax[1].set_ylabel('距离')
+        # self.ax[1].set_xticks([])
+        # self.ax[1].set_yticks([])
+        # self.ax[1].spines["left"].set_visible(False)
         self.data = data[0]
         self.line_symbolic =self.ax[1].plot(np.arange(data.shape[1]),dx*np.sqrt(np.arange(data.shape[1])), ls='--', color='k')
         self.line, =self.ax[1].plot([],[], zorder=1, color='#B72C31')
@@ -82,7 +85,7 @@ class UpdateFigure:
             self.line.set_data(xdata, ydata)
         return self.line_symbolic
 # %%
-fig, ax = plt.subplots(1,2, figsize=(12,3),dpi=200, gridspec_kw=dict(width_ratios=[1,4], left=0.05, right=0.95, bottom=0.2))
+fig, ax = plt.subplots(1,2, figsize=(12,3),dpi=400, gridspec_kw=dict(width_ratios=[1,4], left=0.05, right=0.95, bottom=0.2))
 
 np.random.seed(2022)
 data = np.random.rand(100, 400)
