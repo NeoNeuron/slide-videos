@@ -27,17 +27,13 @@ class UpdateFigure:
         self.rho = rho
         self.cov = np.ones((2,2))
         self.data = self.get_data(self.cov)
-        self.line = self.ax.plot(self.data[0], self.data[1], '.',
-            markerfacecolor='#B4C7E7', markeredgecolor='#2E5597')
+        self.line = self.ax.plot(self.data[0], self.data[1], '.', alpha=0.3)
         self.ax.axis('scaled')
         self.ax.set_xlim(-3.5, 3.5)
         self.ax.set_ylim(-3.5, 3.5)
         self.ax.set_xticks([])
         self.ax.set_yticks([])
-        self.ax.plot((1), (-3.5), ls="", marker=">", ms=10, color="k",
-                transform=self.ax.get_yaxis_transform(), clip_on=False)
-        self.ax.plot((-3.5), (1), ls="", marker="^", ms=10, color="k",
-                transform=self.ax.get_xaxis_transform(), clip_on=False)
+        self.ax.axis('off')
         # initialize text
         self.ax.set_title(f'{1:^5.2f}', fontsize=40)
 
@@ -73,7 +69,7 @@ class UpdateFigure:
 fig, ax = plt.subplots(1,1, figsize=(6,6),dpi=400)
 
 np.random.seed(2022)
-nframes = 109
+nframes = 240
 rho = np.linspace(1,-1, nframes)
 
 # create a figure updater
@@ -81,5 +77,5 @@ ud = UpdateFigure(ax, rho)
 # user FuncAnimation to generate frames of animation
 anim = FuncAnimation(fig, ud, frames=nframes, blit=True)
 # save animation as *.mp4
-anim.save('corr_v2_movie.mp4', fps=12, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save('corr_v2_movie.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
