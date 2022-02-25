@@ -30,38 +30,35 @@ class UpdateFigure:
 
         self.ax.set_xlim(-2,2)
         self.ax.set_ylim(0, 0.4)
-        self.ax.plot(self.x,self._gauss(self.x), color='k', zorder=1)
-        self.ax.axvline(0, ymax=0.9, ls='--', color='grey')
-        self.ax.axvline(0.5, ymax=0.6, ls='--', color='g')
-        self.ax.axvline(-0.5, ymax=0.6, ls='--', color='g')
-        self._shading(0.5)
-        self.ax.text(0.5, 0.25, r'$\varepsilon$', )
-        self.ax.text(-0.5, 0.25, r'$\varepsilon$', )
+        self.line = self.ax.plot(self.x,self._gauss(0, 0.5, self.x), color='k', zorder=1)
+        self.ax.axvline(0, ymax=0.9, ls='--', color='#C00000')
+        vline0 = self.ax.axvline(0.5, ymax=0.6, ls='--', color='#002060')
+        vline1 = self.ax.axvline(-0.5, ymax=0.6, ls='--', color='#002060')
+        self.vlines = [vline0, vline1]
+        self.shades = self._shading(0.5)
+        text0 = self.ax.text(0.5, 0.25, r'$\varepsilon$', )
+        text1 = self.ax.text(-0.5, 0.25, r'$\varepsilon$', )
+        self.texts = [text0, text1]
 
     @staticmethod
-    def _gauss(x):
-        return np.exp(-x**2/(2*0.25))/2/np.pi/0.5
+    def _gauss(mean, sigma, x):
+        return np.exp(-(x-mean)**2/(2*sigma**2))/2/np.pi/sigma
 
     def _shading(self,epsilon):
-        self.ax.fill_between(self.x[self.x>=epsilon], 0, self._gauss(self.x[self.x>=epsilon]), fc='r', alpha=0.5)
-        self.ax.fill_between(self.x[self.x<=-epsilon], 0, self._gauss(self.x[self.x<=-epsilon]), fc='r', alpha=0.5)
+        art1 = self.ax.fill_between(self.x[self.x>=epsilon], 0,  self._gauss(0, 0.5, self.x[self.x>=epsilon]), fc='#1F77B4', alpha=0.5)
+        art2 = self.ax.fill_between(self.x[self.x<=-epsilon], 0, self._gauss(0, 0.5, self.x[self.x<=-epsilon]), fc='#1F77B4', alpha=0.5)
+        return [art1, art2]
 
     def __call__(self, i):
         # This way the plot can continuously run and we just keep
         # watching new realizations of the process
-        # clear current axis and replot
-        self.ax.cla()
-        self.ax.set_xlim(-2,2)
-        self.ax.set_ylim(0, 0.4)
-        line=self.ax.plot(self.x,self._gauss(self.x), color='k', zorder=1)
-        self.ax.axvline(0, ymax=0.9, ls='--', color='grey')
+        self.line[0].set_data(self.x,self._gauss(0, 0.5, self.x))
         eps = 0.5+i*self.depsilon
-        self.ax.axvline(eps, ymax=0.6, ls='--', color='g')
-        self.ax.axvline(-eps, ymax=0.6, ls='--', color='g')
-        self._shading(eps)
-        self.ax.text(eps, 0.25, r'$\varepsilon$', )
-        self.ax.text(-eps, 0.25, r'$\varepsilon$', )
-        return line
+        [self.vlines[i].set_data(np.ones(2)*val, [0,0.6]) for i, val in enumerate((eps, -eps))]
+        [shade.remove() for shade in self.shades]
+        self.shades = self._shading(eps)
+        [self.texts[i].set_position((val, 0.25)) for i, val in enumerate((eps, -eps))]
+        return self.line
 # %%
 fig, ax = plt.subplots(1,1, figsize=(8,4),dpi=200)
 
