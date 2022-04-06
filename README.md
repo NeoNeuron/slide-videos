@@ -85,3 +85,8 @@ pip install svgpathtools svgpath2mpl
     - `3d_projection.py`
     - `height_histogram.py`
     - `stick_density.py`
+
+12. 二维正态分布
+    
+    - `2d_gaussian.py`
+    - `2d_gaussian_margin.py`
