@@ -298,7 +298,8 @@ class UpdateFigure:
 
 fig = plt.figure(figsize=(20,10),dpi=400)
 
-ax = fig.add_gridspec(1, 1, left=0.05, right=0.5, top=0.95, bottom=0.05, figure=fig)
+gs = fig.add_gridspec(1, 1, left=0.05, right=0.5, top=0.95, bottom=0.05, figure=fig)
+ax = fig.add_subplot(gs[0])
 ax.axis('off')
 
 # definitions for the axes
