@@ -1,6 +1,5 @@
 #%%
 import matplotlib.pyplot as plt
-from scipy.stats import norm
 import numpy as np
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from matplotlib.animation import FuncAnimation
@@ -24,12 +23,13 @@ class UpdateFigure:
             purple      = '#A268B4',
             black       = '#000000',
         )
+        self.cm = plt.cm.turbo
         # ====================
         # config data
         # ====================
         self.mean = np.zeros(2)
         self.cov = np.eye(2)
-        self.xx, self.yy = np.meshgrid(np.linspace(-4,4,201), np.linspace(-4,4,201))
+        self.xx, self.yy = np.meshgrid(np.linspace(-4,4,101), np.linspace(-4,4,101))
         xysurf = mn.pdf(np.dstack((self.xx,self.yy)), self.mean, self.cov)
         self.vmin, self.vmax = 0, np.max(xysurf)
 
@@ -46,8 +46,8 @@ class UpdateFigure:
         # ====================
         # plot 3d surface
         # ====================
-        self.surf = ax2.plot_surface(self.xx, self.yy, xysurf, cmap='jet', alpha=0.4,
-                       linewidth=0, antialiased=False, zorder=0, )# vmin=self.vmin, vmax=self.vmax)
+        self.surf = ax2.plot_surface(self.xx, self.yy, xysurf, cmap=self.cm, alpha=0.4,
+                        rstride=1, cstride=1, zorder=0, )# vmin=self.vmin, vmax=self.vmax)
         # ax2.view_init(10, None)
         self.y0 = -4
         verts1, verts2 = self.get_verts(self.y0, self.mean, self.cov)
@@ -71,7 +71,6 @@ class UpdateFigure:
         ax2.set_xlim(xticks[0], xticks[-1])
         ax2.set_ylim(yticks[0], yticks[-1])
         ax2.set_zlim(zticks[0], zticks[-1])
-        ax2.invert_xaxis()
         ax2.xaxis.pane.fill = False
         ax2.yaxis.pane.fill = False
         ax2.zaxis.pane.fill = False
@@ -84,7 +83,7 @@ class UpdateFigure:
         # draw conditional probability
         # ====================
         p_cond = np.array(verts1[:-2])
-        self.line, = ax3.plot(p_cond[:,0], p_cond[:,2], lw=5, color=self.colors['blue'])
+        self.line, = ax3.plot(p_cond[:,0], p_cond[:,2], lw=5, color=self.colors['green'])
         self.shade_2d = ax3.fill_between(p_cond[:,0],0, p_cond[:,2], color=self.colors['red'], alpha=0.8)
         ax3.set_xlabel(r'$x$', fontsize=30)
         ax3.set_ylabel(r'$f(x,y=y_0)$', fontsize=25)

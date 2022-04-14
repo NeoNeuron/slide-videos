@@ -22,6 +22,7 @@ class UpdateFigure:
             purple      = '#A268B4',
             black       = '#000000',
         )
+        self.cm = plt.cm.turbo
         # ====================
         # config data
         # ====================
@@ -43,8 +44,8 @@ class UpdateFigure:
         # ====================
         # plot 3d surface
         # ====================
-        self.surf = ax2.plot_surface(self.xx, self.yy, xysurf, cmap='jet',
-                       linewidth=0, antialiased=False, vmin=self.vmin, vmax=self.vmax)
+        self.surf = ax2.plot_surface(self.xx, self.yy, xysurf, cmap=self.cm,
+                        rstride=1, cstride=1, vmin=self.vmin, vmax=self.vmax)
         ax2.view_init(10, None)
 
         ax2.set_xlabel(r'$x$', fontsize=20)
@@ -60,7 +61,7 @@ class UpdateFigure:
         ax2.set_xlim(xticks[0], xticks[-1])
         ax2.set_ylim(yticks[0], yticks[-1])
         ax2.set_zlim(zticks[0], zticks[-1])
-        ax2.invert_xaxis()
+        # ax2.invert_xaxis()
         ax2.xaxis.pane.fill = False
         ax2.yaxis.pane.fill = False
         ax2.zaxis.pane.fill = False
@@ -72,7 +73,7 @@ class UpdateFigure:
         # ====================
         # draw 2d pcolor
         # ====================
-        self.mesh = ax3.pcolormesh(self.xx, self.yy, xysurf, cmap='jet')
+        self.mesh = ax3.pcolormesh(self.xx, self.yy, xysurf, cmap=self.cm)
         ax3.axis('scaled')
 
     @staticmethod
@@ -86,8 +87,8 @@ class UpdateFigure:
         xysurf = mn.pdf(np.dstack((self.xx,self.yy)), mean_, cov_)
 
         self.surf.remove()
-        self.surf = self.ax2.plot_surface(self.xx, self.yy, xysurf, cmap='jet', 
-            linewidth=0, antialiased=False, vmin=self.vmin, vmax=self.vmax)
+        self.surf = self.ax2.plot_surface(self.xx, self.yy, xysurf, cmap=self.cm,
+                        rstride=1, cstride=1, vmin=self.vmin, vmax=self.vmax)
         self.mesh.set_array(xysurf)
         self.tex.set_text(self.gen_text(mean_, cov_), )
         return [self.surf,]
