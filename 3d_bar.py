@@ -7,8 +7,8 @@ plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
 plt.rcParams['axes.unicode_minus']=False # correct minus sign
 
 plt.rcParams["font.size"] = 16
-plt.rcParams["xtick.labelsize"] = 16
-plt.rcParams["ytick.labelsize"] = 16
+plt.rcParams["xtick.labelsize"] = 13
+plt.rcParams["ytick.labelsize"] = 13
 plt.rcParams["axes.spines.top"] = False
 plt.rcParams["axes.spines.right"] = False
 
@@ -24,5 +24,7 @@ ax.bar3d(_xx.flatten(), _yy.flatten(), np.zeros(25), np.ones(25),np.ones(25),dat
 ax.set_ylabel('高数成绩X')
 ax.set_xlabel('线性代数成绩Y')
 ax.set_zlabel('相关系数', rotation=270)
+ax.view_init(15, -45)
+ax.set_zticks([0,0.05,0.1])
 plt.savefig('3d_bar.pdf', transparent=True)
 # %%
