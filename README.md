@@ -88,9 +88,11 @@ pip install svgpathtools svgpath2mpl
 
 12. 二维正态分布
     
-    - `2d_gaussian.py`
+    - `gaussian2d.py`
+    - `gaussian2d_evolve.py`
+    - `gaussian2d_rotate.py`
     - `2d_gaussian_margin.py`
 
 13. 正态分布
 
-   - `evolve_norm.py`
+    - `evolve_norm.py`
