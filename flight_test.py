@@ -119,7 +119,7 @@ class UpdateFigure:
         gauss_curve = func(y_grid, 0.9*seats, 0.09*seats)
         gauss_curve /= np.sum(gauss_curve*(y_grid[1]-y_grid[0]))
         gauss_curve *= n_days
-        ax_right.plot(gauss_curve, y_grid, color=self.colors['gaussian'], lw=5)
+        ax_right.plot(gauss_curve, y_grid, color=self.colors['gauss'], lw=5)
 
         self.ax_top= ax_top
         self.ax_right= ax_right
