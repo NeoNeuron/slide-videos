@@ -47,13 +47,12 @@ class UpdateFigure:
         plt.savefig(prefix+'_step1.pdf')
 
         self.line = self.ax.plot(self.x,self.gauss(self.x), color='k', zorder=1)
-        plt.savefig(prefix+'_step2.pdf')
         self.ax.axvline(self.mean, ymax=0.95, ls='--', color='#C00000')
+        plt.savefig(prefix+'_step2.pdf')
 
         vline0 = self.ax.axvline(self.isf, ymax=0.8, ls='--', color='#002060')
         vline1 = self.ax.axvline(self.ppf, ymax=0.8, ls='--', color='#002060')
         self.vlines = [vline0, vline1]
-        plt.savefig(prefix+'_step3.pdf')
 
         # shade0 = self._shading(self.ppf, 'right')
         shade1 = self._shading_verts(self.isf, 'left')
@@ -63,7 +62,7 @@ class UpdateFigure:
         stick1, text1 = self.create_text(self.isf, 'left', r'$\beta$')
         self.texts = [text1,]
         self.sticks = [stick1,]
-        plt.savefig(prefix+'_step4.pdf')
+        plt.savefig(prefix+'_step3.pdf')
 
     def create_text(self, x, direction='right', text=r'$\frac{\alpha}{2}$'):
         height = 1.2
