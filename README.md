@@ -69,6 +69,7 @@ pip install svgpathtools svgpath2mpl
     - `previous_topics/variance.ipynb`
     - `Hypothesis.py`
     - `Hypothesis1.py`
+    - `hypothesis_sampling.py`
 
 11. 随机变量的函数
     - `3d_projection.py`
