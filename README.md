@@ -87,3 +87,8 @@ pip install svgpathtools svgpath2mpl
 
 14. 点估计的评价标准
     - `point_estimation.py`
+
+15. 几何概率模型
+    - `geo_prob_1d.py`
+    - `geo_prob_3d.py`
+    - `buffen_needle.py`
