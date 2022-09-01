@@ -92,3 +92,4 @@ pip install svgpathtools svgpath2mpl
     - `geo_prob_1d.py`
     - `geo_prob_3d.py`
     - `buffen_needle.py`
+    - `buffen_measure.py`
