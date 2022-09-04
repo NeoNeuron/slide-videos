@@ -109,6 +109,10 @@ class UpdateFigure:
         elif self.trans_type == 'translation':
             mean_ = self.mean+self.diff*i
             cov_ = self.cov.copy()
+        elif self.trans_type == 'morph':
+            mean_ = self.mean.copy()
+            cov_ = self.cov+self.diff*i
+
         xysurf = mn.pdf(np.dstack((self.xx,self.yy)), mean_, cov_)
 
         self.surf.remove()
