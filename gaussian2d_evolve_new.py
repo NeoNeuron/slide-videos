@@ -39,7 +39,7 @@ class Update_sigma2(UpdateFigure):
 class Update_rho(UpdateFigure):
     def __init__(self, ax1, ax2, ax3):
         super().__init__(ax1, ax2, ax3)
-        self.tex.set_fontsize(60)
+        self.tex.set_fontsize(40)
     
     @staticmethod
     def gen_text(_mean, _cov):
