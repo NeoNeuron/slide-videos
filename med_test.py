@@ -7,8 +7,8 @@ from matplotlib.animation import FuncAnimation
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
 plt.rcParams["font.size"] = 20
-plt.rcParams["xtick.labelsize"] = 16
-plt.rcParams["ytick.labelsize"] = 16
+plt.rcParams["xtick.labelsize"] = 25
+plt.rcParams["ytick.labelsize"] = 25
 
 #%%
 np.random.seed(1901)
@@ -64,13 +64,13 @@ class UpdateDist:
         self.ax = ax
         self.ax.set_yticks([1,2,3])
         self.ax.set_yticklabels(["","", ""])
-        self.ax.set_xlabel("检测人数", fontsize=30)
+        self.ax.set_xlabel("检测人数", fontsize=60)
         # self.ax.set_yticklabels(["检测阳性新冠患者","检测阳性健康人群", "检测阴性"], fontsize=20)
-        self.ax.text(-0.130, 0.17, "新冠患者", transform=self.ax.transAxes, fontsize=25, color='r', )
-        self.ax.text(-0.130, 0.27, "检测阳性", transform=self.ax.transAxes, fontsize=25, color=[228./255,131./255,18./255,1], )
-        self.ax.text(-0.130, 0.43, "健康人群", transform=self.ax.transAxes, fontsize=25, color=[0,32./255,96./255,1], )
-        self.ax.text(-0.130, 0.52, "检测阳性", transform=self.ax.transAxes, fontsize=25, color=[228./255,131./255,18./255,1], )
-        self.ax.text(-0.130, 0.73, "检测阴性", transform=self.ax.transAxes, fontsize=25, color=[0,176./255,80./255,1], )
+        self.ax.text(-0.160, 0.15, "新冠患者", transform=self.ax.transAxes, fontsize=30, color='r', )
+        self.ax.text(-0.160, 0.26, "检测阳性", transform=self.ax.transAxes, fontsize=30, color=[228./255,131./255,18./255,1], )
+        self.ax.text(-0.160, 0.41, "健康人群", transform=self.ax.transAxes, fontsize=30, color=[0,32./255,96./255,1], )
+        self.ax.text(-0.160, 0.51, "检测阳性", transform=self.ax.transAxes, fontsize=30, color=[228./255,131./255,18./255,1], )
+        self.ax.text(-0.160, 0.71, "检测阴性", transform=self.ax.transAxes, fontsize=30, color=[0,176./255,80./255,1], )
         # self.ax.set_yticklabels(["True Positive","False Positive", "Negative"], fontsize=20)
         # self.ax.set_xlabel("Number of people", fontsize=20)
 
@@ -84,8 +84,9 @@ class UpdateDist:
         self.ax1 = ax1
         self.ax1.set_xlim([0,10000])
         self.ax1.set_ylim([0,0.2])
-        self.ax1.set_ylabel("检测准确率", fontsize=25)
-        self.ax1.set_xlabel("检测人数", fontsize=30)
+        self.ax1.set_yticks([0,0.1,0.2])
+        self.ax1.set_ylabel("检测准确率", fontsize=50)
+        self.ax1.set_xlabel("检测人数", fontsize=60)
         # self.ax1.set_xlabel('Number of people tested', fontsize=20)
         # self.ax1.set_ylabel('Test accuracy', fontsize=20)
         self.ax1.spines['top'].set_visible(False)
@@ -158,10 +159,10 @@ fig = plt.figure(figsize=(30,17),dpi=100)
 spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.04, right=0.96, top=0.98, bottom=0.38, figure=fig)
 ax0 = fig.add_subplot(spec1[0])
 ax0.axis('off')
-spec2 = gridspec.GridSpec(ncols=2, nrows=1, left=0.08, right=0.92, top=0.32, bottom=0.08, wspace=0.15, figure=fig)
+spec2 = gridspec.GridSpec(ncols=2, nrows=1, left=0.08, right=0.92, top=0.32, bottom=0.08, wspace=0.20, figure=fig)
 ax1 = fig.add_subplot(spec2[0])
 ax2 = fig.add_subplot(spec2[1])
 ud = UpdateDist(ax0, ax1, ax2, mask)
 anim = FuncAnimation(fig, ud, frames=198, blit=True)
-anim.save('test_movie.mp4', fps=10, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save('covid.mp4', fps=12, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
