@@ -19,7 +19,7 @@ plt.rcParams["ytick.labelsize"] = 20
 #%%
 class UpdateFigure:
     def __init__(self, ax_main:plt.Axes, ax_right:plt.Axes, 
-                 ax_top:plt.Axes, data:np.ndarray):
+                 ax_top:plt.Axes, data:np.ndarray, frame_flags:np.ndarray):
         """Plot the first frame for the animation.
 
         Args:
@@ -45,6 +45,8 @@ class UpdateFigure:
             f2      =self.color_repo['green'],
             gl      =self.color_repo['black'],
         )
+        self.ff = frame_flags
+        self.pointer = 0
         # ====================
         # Define transfer functions
         # ====================
@@ -72,15 +74,14 @@ class UpdateFigure:
         xlim = (0, 1)
         ax_main.set_xlim(xlim)
         ax_main.set_ylim(ylim)
-        ax_main.set_xticks([])
-        ax_main.set_yticks([])
+        ax_main.set_xticks([0,0.5,1])
         self.ax_main = ax_main
-        self.ax_main.grid()
         # initialize the bins of histogram
-        ax_main.text(0.5, -0.12,   r'$y$',    transform=ax_main.transAxes,  fontsize=30)
-        ax_main.text(-0.10, 0.5, r'$x$',    transform=ax_main.transAxes,  fontsize=30)
-        ax_top.text(-0.160, 0.55,  r'$f(y)$', transform=ax_top.transAxes,   fontsize=30)
-        ax_right.text(0.3, -0.12,  r'$f(x)$', transform=ax_right.transAxes, fontsize=30)
+        ax_main.text(0.5, -0.12,  r'$y$',    transform=ax_main.transAxes,  fontsize=30)
+        ax_main.text(-0.12, 0.55,  r'$x$',    transform=ax_main.transAxes,  fontsize=30)
+        ax_main.text(-0.16, 0.45,  '天数',    transform=ax_main.transAxes,  fontsize=30)
+        ax_top.text(-0.160, 0.55, r'$f(y)$', transform=ax_top.transAxes,   fontsize=30)
+        ax_right.text(0.3, -0.12, r'$f(x)$', transform=ax_right.transAxes, fontsize=30)
 
         ax_top.set_xlim(self.ax_main.get_xlim())
         ax_top.set_ylim(0,2)
@@ -139,6 +140,7 @@ class UpdateFigure:
             ]
         [line.set_clip_on(False) for line in self.lines]
 
+        self.dot, = ax_main.plot([line_ends[0][0][0]],[line_ends[0][1][0]], 'o', ms=20,color='orange', markeredgecolor='navy')
         self.xp= xp
         self.data = data
         self.last_hl_id = None
@@ -204,45 +206,49 @@ class UpdateFigure:
         xp2 = np.ones(2)*xp
         return [
                 [xp2, [self.transfer(xp), 13],],
-                [xp2+self.dxp, [self.transfer(xp+self.dxp), 13],],
                 [[xp, 1.02], self.transfer(xp2),],
-                [[xp+self.dxp, 1.02], self.transfer(xp2+self.dxp),]
             ]
 
     def __call__(self, i):
         # This way the plot can continuously run and we just keep
         # watching new realizations of the process
 
-        if i>0 and i < self.data.shape[0]:
+        if self.ff[i]:
+            if self.pointer < self.data.shape[0]:
+                if self.last_hl_id is not None:
+                    self.bars_top[self.last_hl_id].set_alpha(0.5)
+                    self.bars_right[self.last_hl_id].set_alpha(0.5)
+                    # self.bars_right[self.transfer_index[self.last_hl_id]].set_alpha(0.5)
 
-            if self.last_hl_id is not None:
+                bin_id = int(self.data[self.pointer]//self.binsize)
+                self.last_hl_id=bin_id
+                # update the height of bars for histogram
+                self.x_counts[bin_id] += 1.0/self.data.shape[0]/self.binsize
+                self.bars_top[bin_id].set_height(self.x_counts[bin_id])
+                self.bars_top[bin_id].set_alpha(1)
+                self.y_counts[bin_id] += self.y_inc[bin_id]
+                self.bars_right[bin_id].set_width(self.y_counts[bin_id])
+                self.bars_right[bin_id].set_alpha(1)
+                # update guiding lines
+                xp = self.data[self.pointer]
+                if xp == 0:
+                    xp += 0.001
+                elif xp == 1:
+                    xp -= 0.001
+                line_ends = self.get_line_ends(xp)
+                [self.lines[i].set_data(*line_end) for i, line_end in enumerate(line_ends)]
+                self.dot.set_data([line_ends[0][0][0]],[line_ends[0][1][0]])
+                self.pointer+=1
+
+            elif self.pointer == self.data.shape[0]:
+
                 self.bars_top[self.last_hl_id].set_alpha(0.5)
                 self.bars_right[self.last_hl_id].set_alpha(0.5)
-                # self.bars_right[self.transfer_index[self.last_hl_id]].set_alpha(0.5)
-
-            bin_id = int(self.data[i-1]//self.binsize)
-            self.last_hl_id=bin_id
-            # update the height of bars for histogram
-            self.x_counts[bin_id] += 1.0/self.data.shape[0]/self.binsize
-            self.bars_top[bin_id].set_height(self.x_counts[bin_id])
-            self.bars_top[bin_id].set_alpha(1)
-            self.y_counts[bin_id] += self.y_inc[bin_id]
-            self.bars_right[bin_id].set_width(self.y_counts[bin_id])
-            self.bars_right[bin_id].set_alpha(1)
-            # update guiding lines
-            xp = self.binsize*bin_id
-            if xp == 0:
-                xp += 0.001
-            elif xp == 1:
-                xp -= 0.001
-            line_ends = self.get_line_ends(xp)
-            [self.lines[i].set_data(*line_end) for i, line_end in enumerate(line_ends)]
-
-        elif i > self.data.shape[0]:
-
-            x_grid = np.linspace(0,1, 200)
-            self.ax_top.plot(x_grid, self.f1(x_grid), color=self.colors['f1'], lw=5)
-            self.ax_right.plot(self.f2(x_grid)*0.068259, self.transfer(x_grid), color=self.colors['f2'], lw=5)
+                [line.set_data([],[]) for line in self.lines]
+                self.dot.set_data([],[])
+                x_grid = np.linspace(0, 1, 200)
+                self.ax_top.plot(x_grid, self.f1(x_grid), color=self.colors['f1'], lw=5)
+                self.ax_right.plot(self.f2(x_grid)*0.068259, self.transfer(x_grid), color=self.colors['f2'], lw=5)
 
         return self.bars_right
 
@@ -275,16 +281,25 @@ axHistx.xaxis.set_major_formatter(nullfmt)
 axHisty.yaxis.set_major_formatter(nullfmt)
 
 # create a figure updater
-np.random.seed(0)
+np.random.seed(2022)
 data = np.random.rand(400)
-ud = UpdateFigure(axMain, axHisty, axHistx, data)
-nframes=432
+
+# controlling video playing speed
+nframes=480
+fps=12
+frame_flag = np.ones(nframes+1, dtype=bool)
+frame_flag[:75]=False
+frame_flag[1::6]=True   # 2 frame / second
+frame_flag[31::4]=True  # 3 frame / second
+frame_flag[55::2]=True  # 6 frame / second
+ud = UpdateFigure(axMain, axHisty, axHistx, data, frame_flag)
+plt.savefig('test.pdf')
+#%%
 # user FuncAnimation to generate frames of animation
 anim = FuncAnimation(fig, ud, frames=nframes+1, blit=True)
 # save animation as *.mp4
-anim.save('random_gen_demo.mp4', fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save('random_gen_demo.mp4', fps=fps, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
-#%%
 from scipy import stats
 fig = plt. figure(figsize=(20,10), dpi=200)
 xticks=[0,2,4,6,8,10,12,14]
