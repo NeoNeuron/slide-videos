@@ -26,7 +26,8 @@ pip install svgpathtools svgpath2mpl
 4. 随机事件独立性（选自第一章：随机事件和概率）
    - `tetrahedron_rotation.py`
    - `cube_morph.py`
-   - `previous_topics/independence.ipynb`
+   - `missile_hit.py`
+   - `missile_shot.py`
 
 5. 数学期望（选自第四章：随机变量的数字特征）
    - `discretize_func.py`
