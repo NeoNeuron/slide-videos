@@ -89,6 +89,7 @@ pip install svgpathtools svgpath2mpl
 
 13. 正态分布
     - `evolve_norm.py`
+    - `normal_figures.py`
 
 14. 点估计的评价标准
     - `point_estimation.py`
