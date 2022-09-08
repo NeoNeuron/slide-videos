@@ -26,12 +26,12 @@ if not hasattr(Axis, "_get_coord_info_old"):
 ###patch end###
 
 #%%
-mean = np.array([81.5, 31.5, 81, 28.3])
-cov = np.diag([9.50, 5.45, 5.72, 2.87])**2
+mean = np.array([81.5, 31.5, 28.3])
+cov = np.diag([9.50, 5.45, 2.87])**2
 cov[0,1]=cov[1,0]=0.8*9.50*5.45
-cov[2,3]=cov[3,2]=-0.8*5.72*2.87
+cov[0,2]=cov[2,0]=-0.8*9.50*2.87
 data = multivariate_normal.rvs(mean, cov, size=10000, random_state=2022)
-H, _x, _y = np.histogram2d(data[:,0], data[:,1], bins=20)
+H, _x, _y = np.histogram2d(data[:,0], data[:,2], bins=20)
 H /=10000
 dx = _x[1]-_x[0]
 dy = _y[1]-_y[0]
@@ -58,7 +58,28 @@ ax.set_zlabel('概率', rotation=270)
 ax.view_init(15, 180-55)
 plt.savefig('3d_bar.pdf', transparent=True)
 # %%
+print(data.mean(0))
 print(data.std(0))
+print(data.std(0)**2)
 # %%
-print(np.mean(data[:,2]*data[:,3]))
+print(np.mean(data[:,0]*data[:,2]))
 # %%
+plt.rcParams['font.size']=20
+plt.rcParams['xtick.labelsize']=20
+plt.rcParams['ytick.labelsize']=20
+fig, ax = plt.subplots(3,1, figsize=(15,6), sharex=True,
+                       gridspec_kw={'top':0.95, 'right':0.95, 'bottom': 0.12, 'left': 0.12, 'hspace':0.1})
+
+mask = np.argsort(data[:51,0]/2+data[:51,2])
+ax[0].plot(data[:51,0][mask], '-o', ms=8)[0].set_clip_on(False)
+ax[1].plot(data[:51,1][mask], '-o', ms=8)[0].set_clip_on(False)
+ax[2].plot(data[:51,2][mask], '-o', ms=8)[0].set_clip_on(False)
+
+ax[0].set_ylabel('X股价')
+ax[1].set_ylabel('Y股价')
+ax[2].set_ylabel('Z股价')
+ax[2].set_xlabel('时间')
+ax[2].set_xlim(0,50)
+ax[2].set_ylim(15,45)
+ax[2].set_xticks(np.arange(6)*10)
+plt.savefig('trend_of_stock_price.pdf')
