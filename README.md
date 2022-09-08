@@ -47,6 +47,7 @@ pip install svgpathtools svgpath2mpl
    - `dot_product.py`
    - `cov_fig.py`
    - `3d_bar.py`
+   - `3d_bar_v2.py`
    - `previous_topics/covariance.ipynb`
 
 8. 大数定律（选自第五章：大数定律和中心极限定理）
