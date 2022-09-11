@@ -18,7 +18,7 @@ pip install svgpathtools svgpath2mpl
    - `rcp.py`
 
 2. 全概率公式（选自第一章：随机事件和概率）
-   - `previous_topics/nucleic_acid.ipynb`
+   - `pcr.py`
    - `goat_problem.py`
 
 3. 贝叶斯公式（选自第一章：随机事件和概率）
