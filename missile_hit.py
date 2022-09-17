@@ -41,7 +41,7 @@ class UpdateFigure:
         self.ax[1].spines['bottom'].set_visible(False)
         self.ax[1].spines['right'].set_visible(False)
         self.ax[1].set_yticks([0,1])
-        self.ax[1].set_yticklabels(['总次数','命中次数'], fontsize=15)
+        self.ax[1].set_yticklabels(['总次数','命中次数'], fontsize=22)
 
         self.ax[2].axhline(hit_theory, c='m')
         self.line, = self.ax[2].plot([], [], '-o', c='navy', markerfacecolor='orange', )
@@ -71,12 +71,12 @@ class UpdateFigure:
 # setup contents
 fig, ax = plt.subplots(3,1,figsize=(10,10), 
                        gridspec_kw={'height_ratios':[4,1,4], 'top':0.95,
-                                    'bottom':0.10, 'left':0.1, 'right':0.95,
+                                    'bottom':0.08, 'left':0.13, 'right':0.97,
                                     'hspace':0.15})
-ax[0].set_ylabel('发射的子弹数', fontsize=20)
+ax[0].set_ylabel('发射的子弹数', fontsize=30)
 ax[0].set_xticklabels([])
-ax[2].set_ylabel('理论命中率和试验射命中率', fontsize=20)
-ax[2].set_xlabel('试验次数', fontsize=20)
+ax[2].set_ylabel('理论命中率和试验射命中率', fontsize=25)
+ax[2].set_xlabel('试验次数', fontsize=30)
 [axi.set_xlim(0,50) for axi in ax]
 ax[0].set_ylim(0,100)
 ax[2].set_ylim(0,1)
@@ -100,8 +100,8 @@ x = np.arange(801)
 y = 1-(1-p)**x
 
 ax.plot(x,y,lw=3,c='navy')[0].set_clip_on(False)
-ax.set_xlabel('发射子弹数')
-ax.set_ylabel('命中率')
+ax.set_xlabel('发射子弹数', fontsize=30)
+ax.set_ylabel('命中率', fontsize=30)
 ax.set_xlim(0,800)
 ax.set_ylim(0,1)
 
@@ -112,5 +112,6 @@ for x_, color_ in zip([100,459], ['m', 'r']):
     ax.plot([0,x_], [y_, y_], '--', color=color_)
     ax.text(x_+5, 0, f'{x_:.0f}', color=color_, ha='left', va='bottom')
     ax.text(0, y_+0.01, f'{y_:6.3f}', color=color_, ha='left', va='bottom')
+plt.tight_layout()
 
 plt.savefig('missile_hit.pdf')
