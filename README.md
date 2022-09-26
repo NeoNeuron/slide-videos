@@ -97,6 +97,11 @@ pip install svgpathtools svgpath2mpl
     - `Hypothesis1.py`
     - `hypothesis_sampling.py`
 
+20. 线性回归
+    - `lr_examples.py`
+    - `lr_height_CI.py`
+    - `lr_height_CI_movie.py`
+
 ## Others Chapters
 
 1. 概率的定义（选自第一章：随机事件和概率）
