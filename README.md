@@ -54,7 +54,7 @@ pip install svgpathtools svgpath2mpl
     - `simulate_central_limit.py`
     - `general_lln.py`
     - `previous_topics/car.ipynb`
-    - `previous_topics/plot_curve.ipynb`
+    - `pcr_expectation.py`
     - `SPitts.py`
 
 11. 方差（选自第四章：随机变量的数字特征）
