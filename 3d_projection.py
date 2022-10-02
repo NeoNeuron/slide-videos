@@ -23,10 +23,10 @@ class UpdateFigure:
         # ====================
         # adjust figure axis settings
         # ====================
-        ax.set_xlabel(r'$y=g(x)$', fontsize=20)
-        ax.set_ylabel(r'$x$', fontsize=20)
+        ax.set_xlabel(r'$x=\phi(y)$', fontsize=20, usetex=True)
+        ax.set_ylabel(r'$y$', fontsize=20, usetex=True)
         ax.zaxis.set_rotate_label(False)
-        ax.set_zlabel(r'$f(y)$', rotation=0, fontsize=20)
+        ax.set_zlabel(r'$f(x)$', rotation=0, fontsize=20, usetex=True)
         ax.set_xlim(0,1)
         ax.set_xticks([0,0.5,1])
         ax.set_ylim(0,1)
@@ -84,11 +84,11 @@ class UpdateFigure:
         ax.add_collection3d(self.shade)
         ax.add_collection3d(self.shade_v)
         ax.add_collection3d(self.shade_v1)
-        self.text1 = ax.text(-0.05,yp*0.9,0, r'$\Delta x$', ha='left',
+        self.text1 = ax.text(-0.05,yp*0.9,0, r'$\Delta y$', ha='left',
             color=self.colors['blue'], fontsize=16)
-        self.text2 = ax.text(self.g_x(yp)*1.2,0.78,0, r"$g'(x)\Delta x$", ha='left', 
+        self.text2 = ax.text(self.g_x(yp)*1.2,0.78,0, r"$\phi'(y)\Delta y$", ha='left', 
             color=self.colors['red'], fontsize=16)
-        self.text3 = ax.text(self.g_x(yp)*1.2,1,self.f_y(self.g_x(yp))*1.0, r"$f(g(x))$", ha='left', 
+        self.text3 = ax.text(self.g_x(yp)*1.2,1,self.f_y(self.g_x(yp))*1.0, r"$f(\phi(y))$", ha='left', 
             color=self.colors['dark_green'], fontsize=16)
 
         self.yp = yp
