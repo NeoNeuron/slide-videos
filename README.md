@@ -87,6 +87,9 @@ pip install svgpathtools svgpath2mpl
     - `general_distributions.py`
     - `general_distributions2.py`
 
+15. 矩估计
+    - `moment_estimation.py`
+
 17. 点估计的评价标准
     - `point_estimation.py`
     - `bulb_lifetime.py`
