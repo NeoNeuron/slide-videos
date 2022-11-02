@@ -6,9 +6,7 @@ This repo provides scripts as generators for slides animation for probability an
 
 Install the following packages to ensure the successful excution of scripts
 ```bash
-conda install -y numpy matplotlib scipy ffmpeg ipython jupyter notebook
-
-pip install svgpathtools svgpath2mpl
+conda env create -y -f requirements.yml
 ```
 
 ## Contents of topics and related scripts

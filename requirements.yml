@@ -1,0 +1,13 @@
+name: slides
+channels:
+  - defaults
+dependencies:
+  - numpy
+  - matplotlib
+  - scipy
+  - jupyter
+  - ffmpeg
+  - pip
+  - pip:
+    - svgpath2mpl
+    - svgpathtools
