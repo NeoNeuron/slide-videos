@@ -5,6 +5,7 @@ dependencies:
   - numpy
   - matplotlib
   - scipy
+  - scikit-learn
   - jupyter
   - ffmpeg
   - pip
