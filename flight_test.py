@@ -1,4 +1,7 @@
 # %%
+from pathlib import Path
+path = Path('central_limit_theorem/')
+path.mkdir(exist_ok=True)
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -60,13 +63,14 @@ class UpdateFigure:
         self.colors = dict(
             flight_init=[0,0,0,1],
             main=np.array([0,109,135,255])/255.0, #006D87
+            main_p=np.array([0,109,135,100])/255.0, #006D87
             gauss=np.array([177,90,67,255])/255.0, #B15A43
             flight_red=np.array([230,0,18,255])/255.0,
             flight_green=np.array([0,176,80,255])/255.0,
         )
         self.ax = ax
         # generate the grid of flights
-        xn, yn = 37, 10
+        xn, yn = 41, 9
         xx, yy = np.meshgrid(np.arange(xn), np.arange(yn))
         self.sc_flight = self.ax.scatter(
             xx.flatten()[:n_days], yy.flatten()[:n_days], s=2000, 
@@ -82,11 +86,12 @@ class UpdateFigure:
         # scatter plot:
         self.line_main, = ax_main.plot([], [], 'o',
             color=self.colors['main'],
-            markersize=6,
-            markerfacecolor='none',
+            markersize=10,
+            markeredgecolor=self.colors['main'],
+            markerfacecolor=self.colors['main_p'],
             markeredgewidth=2)
         ax_main.set_xlabel('日期', fontsize=40)
-        ax_main.set_ylabel('登机人数', fontsize=40)
+        ax_main.set_ylabel('需要登机\n人数', fontsize=35)
 
         # now determine nice limits by hand:
         ymax = np.max(np.fabs(data))
@@ -104,7 +109,7 @@ class UpdateFigure:
         self.rects = ax_right.barh((edges[1:]+edges[:-1])/2, np.zeros_like(counts), color=self.colors['main'])
         self.data_line_top = (np.cumsum(data<=300)/(np.arange(data.shape[0])+1))*100
         self.line_top, = ax_top.plot([],[], color=self.colors['main'], lw=5)
-        ax_top.set_ylabel('乘客均有座概率(%)', fontsize=40)
+        ax_top.set_ylabel('乘客均有座\n概率(%)', fontsize=35)
         ax_right.set_xlabel('天数', fontsize=40)
 
         ax_top.set_xlim(self.ax_main.get_xlim())
@@ -128,8 +133,8 @@ class UpdateFigure:
         # This way the plot can continuously run and we just keep
         # watching new realizations of the process
 
+        n_inc = 1
         if i > 0:
-            n_inc = 1
             # update lines
             idx = (i)*n_inc
             self.line_main.set_data(self.days[:idx], self.data[:idx])
@@ -142,7 +147,8 @@ class UpdateFigure:
             # update scatter facecolor
             for j in np.arange(n_inc):
                 idx = (i-1)*n_inc+j
-                self.color[idx,:] = self.colors['flight_red'] if self.data[idx]>300 else self.colors['flight_green']
+                if idx < self.data.shape[0]:
+                    self.color[idx,:] = self.colors['flight_red'] if self.data[idx]>300 else self.colors['flight_green']
             self.sc_flight.set_facecolor(self.color)
         return self.rects
 # %%
@@ -162,19 +168,19 @@ days = 365
 seats = 319
 margin = np.sum(attendence[100:100+days,:seats], axis=1, dtype=float)
 
-fig = plt.figure(figsize=(30,20),dpi=100)
-spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.04, right=0.96, top=0.98, bottom=0.60, figure=fig)
+fig = plt.figure(figsize=(30,15),dpi=100)
+spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.0, right=1.0, top=1.0, bottom=0.58, figure=fig)
 ax0 = fig.add_subplot(spec1[0])
 ax0.axis('off')
 
 # definitions for the axes
-left, width = 0.1, 0.65
-bottom, height = 0.1, 0.27
+left, width = 0.08, 0.75
+bottom, height = 0.08, 0.27
 left_h = left + width + 0.02
 bottom_h = bottom + height + 0.02
 rect_main = [left, bottom, width, height]
 rect_histx = [left, bottom_h, width, 0.2]
-rect_histy = [left_h, bottom, 0.17, height]
+rect_histy = [left_h, bottom, 0.12, height]
 
 axMain = plt.axes(rect_main)
 axHistx = plt.axes(rect_histx)
@@ -188,8 +194,9 @@ axHisty.yaxis.set_major_formatter(nullfmt)
 
 # create a figure updater
 ud = UpdateFigure(ax0, margin, axMain, axHisty, axHistx, days)
+# fig.savefig(path/'test.png', dpi=200)
 # user FuncAnimation to generate frames of animation
-anim = FuncAnimation(fig, ud, frames=366, blit=True)
+anim = FuncAnimation(fig, ud, frames=384, blit=True)
 # save animation as *.mp4
-anim.save('flight_movie.mp4', fps=24, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'flight_movie.mp4', fps=24, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%

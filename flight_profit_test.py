@@ -1,4 +1,7 @@
 # %%
+from pathlib import Path
+path = Path('central_limit_theorem/')
+path.mkdir(exist_ok=True)
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -32,7 +35,7 @@ class UpdateDist:
     def __init__(self, ax, data, ax_main, ax_right, ax_top, days, threshold):
         self.ax = ax
         self.threshold = threshold
-        xn, yn = 37, 10
+        xn, yn = 41, 9
         xx, yy = np.meshgrid(np.arange(xn), np.arange(yn))
         self.sc_flight = self.ax.scatter(xx.flatten()[:days],yy.flatten()[:days], s=2000, facecolor=[0,0,0,1], marker=flight_marker)
         self.color = np.tile([0,0,0,1],(int(days),1)).astype(float)
@@ -44,12 +47,12 @@ class UpdateDist:
 
         # main plot:
         self.line_main, = ax_main.plot([], [], 'o',
-            color='#006D87',
-            markersize=6,
-            markerfacecolor='none',
+            markerfacecolor=np.array([0,109,135,100])/255.0, #006D87
+            markeredgecolor=np.array([0,109,135,255])/255.0, #006D87
+            markersize=10,
             markeredgewidth=2)
         ax_main.set_xlabel('日期', fontsize=40)
-        ax_main.set_ylabel('平均利润(万)', fontsize=40)
+        ax_main.set_ylabel('总利润(万)', fontsize=35)
         # ax_main.grid(linestyle='--')
 
         # now determine nice limits by hand:
@@ -69,7 +72,7 @@ class UpdateDist:
         self.rects = ax_right.barh((edges[1:]+edges[:-1])/2, np.zeros_like(counts), color='#006D87')
         self.data_line_top = (np.cumsum(data>=self.threshold)/(np.arange(data.shape[0])+1))*100
         self.line_top, = ax_top.plot([],[], color='#006D87', lw=5)
-        ax_top.set_ylabel('利润达预期概率(%)', fontsize=40)
+        ax_top.set_ylabel('利润达\n预期概率(%)', fontsize=35)
         ax_right.set_xlabel('天数', fontsize=40)
 
         ax_top.set_xlim(self.ax_main.get_xlim())
@@ -104,14 +107,15 @@ class UpdateDist:
             self.line_main.set_data(self.day_data[:idx], self.data[:idx])
             self.line_top.set_data(self.day_data[:idx], self.data_line_top[:idx])
             
-            counts, edges = np.histogram(self.data[:idx], range=self.range, bins = self.bins)
+            counts, _ = np.histogram(self.data[:idx], range=self.range, bins = self.bins)
             for rect, h in zip(self.rects, counts):
                 rect.set_width(h)
             # update scatter facecolor
             for j in np.arange(n_inc):
                 # idx = i-1
                 idx = (i-1)*n_inc+j
-                self.color[idx,:] = [230./255,0./255,18./255,1] if self.data[idx]<self.threshold else [0,176./255,80./255,1]
+                if idx < self.data.shape[0]:
+                    self.color[idx,:] = [230./255,0./255,18./255,1] if self.data[idx]<self.threshold else [0,176./255,80./255,1]
             self.sc_flight.set_facecolor(self.color)
         return self.rects
 # %%
@@ -165,19 +169,19 @@ margin = np.sum(attendence[100:100+days,:seats], axis=1, dtype=float)
 from matplotlib.ticker import NullFormatter 
 nullfmt = NullFormatter()         # no labels
 
-fig = plt.figure(figsize=(30,20),dpi=200)
-spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.04, right=0.96, top=0.98, bottom=0.60, figure=fig)
+fig = plt.figure(figsize=(30,15),dpi=200)
+spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.00, right=1.00, top=1.00, bottom=0.58, figure=fig)
 ax0 = fig.add_subplot(spec1[0])
 ax0.axis('off')
 
 # definitions for the axes
-left, width = 0.1, 0.65
-bottom, height = 0.1, 0.27
+left, width = 0.08, 0.75
+bottom, height = 0.08, 0.27
 left_h = left + width + 0.02
 bottom_h = bottom + height + 0.02
 rect_main = [left, bottom, width, height]
 rect_histx = [left, bottom_h, width, 0.2]
-rect_histy = [left_h, bottom, 0.17, height]
+rect_histy = [left_h, bottom, 0.12, height]
 
 axMain = plt.axes(rect_main)
 axHistx = plt.axes(rect_histx)
@@ -188,6 +192,6 @@ axHistx.xaxis.set_major_formatter(nullfmt)
 axHisty.yaxis.set_major_formatter(nullfmt)
 
 ud = UpdateDist(ax0, margin, axMain, axHisty, axHistx, days, threshold)
-anim = FuncAnimation(fig, ud, frames=74, blit=True)
-anim.save('flight_movie_money.mp4', fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim = FuncAnimation(fig, ud, frames=84, blit=True)
+anim.save(path/'flight_movie_money.mp4', fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%

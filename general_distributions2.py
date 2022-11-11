@@ -1,5 +1,8 @@
 if __name__ == '__main__':
     #%%
+    from pathlib import Path
+    path = Path('central_limit_theorem/')
+    path.mkdir(exist_ok=True)
     import numpy as np
     import matplotlib.pyplot as plt
     plt.rcParams['axes.labelsize'] = 16
@@ -60,7 +63,8 @@ if __name__ == '__main__':
     uh.ax.set_ylim(my_dist_args['norm']['ylim'])
     uh.ax.set_ylabel('概率密度')
     if zscore:
-        uh.ax.set_xlabel(r'$\frac{1}{\sigma/\sqrt{n}}\left(\frac{1}{n}\sum_i^n X_i-\mu\right)$', fontsize=14)
+        uh.ax.set_xlabel(r'$Z_n$的标准化', fontsize=14)
+        # uh.ax.set_xlabel(r'$\frac{1}{\sigma/\sqrt{n}}\left(\frac{1}{n}\sum_i^n X_i-\mu\right)$', fontsize=14)
         x_grid = np.linspace(-10,10,400)
         normal_curve = Gaussian(0,1)(x_grid)/(x_grid[1]-x_grid[0])
         uh.ax.plot(x_grid, normal_curve, 'r')
@@ -72,13 +76,14 @@ if __name__ == '__main__':
     #     uh.ax.set_xlim(*item['xlim'])
     # uh.ax.set_xlim(*(-0.5,250))
 
-    number_list = [1,3,5,6,7,8,12,18,28,43,65,99,151,230,350]
-    uh.set_frame_numbers = number_list
-    uh.set_colors = plt.cm.Oranges(0.8*np.arange(len(number_list)/len(number_list)))
+    number_list = np.array([1,2,3,4,5,6,8,12,18,28,43,65,99,151,230,350])
+    number_list = np.tile(number_list, (3,1)).T.flatten()
+    uh.set_frame_numbers(number_list)
+    uh.set_colors(plt.cm.Oranges(0.8*np.arange(len(number_list))/len(number_list)))
 
-    anim = FuncAnimation(fig, uh, frames=16, blit=True)
+    anim = FuncAnimation(fig, uh, frames=16*3, blit=True)
     if zscore:
         fname = f"evolving_joint_norm.mp4"
     else:
         fname = f"evolving_joint.mp4"
-    anim.save(fname, fps=1, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+    anim.save(path/fname, fps=4, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
