@@ -1,7 +1,7 @@
 # %%
-PATH = 'moment_estimation/'
-import os
-os.makedirs(PATH, exist_ok=True)
+from pathlib import Path
+PATH = Path('moment_estimation/')
+PATH.mkdir(exist_ok=True)
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -195,22 +195,22 @@ class UpdateDist:
         return [self.line_left,]
 
 # %%
-fig = plt.figure(figsize=(30,14),dpi=400)
+fig = plt.figure(figsize=(30,14))
 spec1 = plt.GridSpec(ncols=1, nrows=1, left=0.02, right=0.75, top=0.95, bottom=0.73, )
 ax0 = fig.add_subplot(spec1[0])
 ax0.axis('off')
-spec3 = plt.GridSpec(ncols=1, nrows=1, left=0.75, right=0.93, top=0.90, bottom=0.8, )
+spec3 = plt.GridSpec(ncols=1, nrows=1, left=0.75, right=0.93, top=0.85, bottom=0.8, )
 ax2 = fig.add_subplot(spec3[0])
-gs = plt.GridSpec(ncols=2, nrows=1, left=0.08, right=0.92, top=0.65, bottom=0.1, )
+gs = plt.GridSpec(ncols=2, nrows=1, left=0.10, right=0.96, top=0.65, bottom=0.1, wspace=0.3)
 ax = [fig.add_subplot(gsi) for gsi in gs]
 for axi in ax:
     axi.set_xlabel('样本组编号', fontsize=50)
-    # axi.set_ylabel(r'$\hat{\mu}$', fontsize=80, ha='right', va='top', rotation=0)
-    axi.set_ylabel(r'$\hat{\sigma}^2$', fontsize=80, ha='right', va='top', rotation=0)
+    # axi.set_ylabel(r'$\hat{\mu}$', fontsize=80, ha='center', va='bottom')
+    axi.set_ylabel(r'$\widehat{\sigma^2}$', fontsize=80, ha='center', va='bottom')
 
 # ud = UpdateDist(ax0, ax, ax2, data_mean, data_mean2)
 ud = UpdateDist(ax0, ax, ax2, data_sigma, data_sigma2)
 anim = FuncAnimation(fig, ud, frames=216, blit=True)
-anim.save(PATH+'sigma.mp4', fps=12, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(PATH/'sigma.mp4', fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 
 # %%
