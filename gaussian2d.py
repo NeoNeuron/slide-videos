@@ -7,8 +7,9 @@ from scipy.stats import multivariate_normal as mn
 # %%
 plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'
-plt.rcParams['text.usetex'] = True
 plt.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
+plt.rcParams['xtick.labelsize']=25
+plt.rcParams['ytick.labelsize']=25
 
 class UpdateFigure:
     def __init__(self, ax1, ax2, ax3):
@@ -39,7 +40,7 @@ class UpdateFigure:
         self.tex = ax1.text(0.5,0.5,
             self.gen_text(self.mean, self.cov), 
             ha='center', va='center',
-            color='k', fontsize=25)
+            color='k', fontsize=25, usetex=True)
 
         # ====================
         # plot 3d surface
@@ -48,8 +49,11 @@ class UpdateFigure:
                         rstride=1, cstride=1, vmin=self.vmin, vmax=self.vmax)
         ax2.view_init(10, None)
 
-        ax2.set_xlabel(r'$x$', fontsize=20)
-        ax2.set_ylabel(r'$y$', fontsize=20)
+        ax2.set_xlabel(r'$x$', fontsize=40, labelpad=15)
+        ax2.set_ylabel(r'$y$', fontsize=40, labelpad=15)
+        ax2.tick_params(axis='x', which='major', pad=-2)
+        ax2.tick_params(axis='y', which='major', pad=-2)
+        ax2.tick_params(axis='z', which='major', pad=10)
         ax2.zaxis.set_rotate_label(False)
         # ax2.set_zlabel(r'$f(y)$', rotation=0, fontsize=20)
         xticks=[-4,-2,0,2,4]
@@ -73,10 +77,14 @@ class UpdateFigure:
         # ====================
         # draw 2d pcolor
         # ====================
-        self.mesh = ax3.pcolormesh(self.xx, self.yy, xysurf, cmap=self.cm)
+        self.mesh = ax3.pcolormesh(self.xx, self.yy, xysurf, cmap=self.cm, lw=0)
         ax3.axis('scaled')
+        ax3.yaxis.tick_right()
+        ax3.yaxis.set_label_position('right')
         ax3.set_xticks([-4,-2,0,2,4])
         ax3.set_yticks([-4,-2,0,2,4])
+        ax3.set_xlabel(r'$x$', fontsize=40, labelpad=0)
+        ax3.set_ylabel(r'$y$', fontsize=40, rotation=0, va='center', labelpad=10)
     
     def set_target(self, trans_type, diff, nframe):
         self.trans_type = trans_type
@@ -122,25 +130,37 @@ class UpdateFigure:
         self.tex.set_text(self.gen_text(mean_, cov_), )
         return [self.surf,]
 
+def create_canvas_vertical():
+    fig = plt.figure(figsize=(5,10),)
+    spec = gridspec.GridSpec(1, 1, 
+        left=0.10, right=0.85, top=0.50, bottom=0.05, 
+        figure=fig)
+    ax3 = fig.add_subplot(spec[0], )
+    spec = gridspec.GridSpec(1, 1, 
+        left=0.01, right=0.91, top=1.00, bottom=0.45, 
+        figure=fig)
+    ax2 = fig.add_subplot(spec[0], projection='3d')
+    spec = gridspec.GridSpec(1, 1, 
+        left=0.10, right=0.90, top=1.00, bottom=0.90, 
+        figure=fig)
+    ax1 = fig.add_subplot(spec[0])
+    return fig, ax1, ax2, ax3
+
 # %%
 if __name__ == '__main__':
     # %%
-    fig = plt.figure(figsize=(5,10),dpi=400,)
-    spec = gridspec.GridSpec(3, 1, 
-        left=0.10, right=0.90, top=1.00, bottom=0.05, 
-        hspace=0.0,
-        height_ratios=[1,5,4],
-        figure=fig)
-    ax1 = fig.add_subplot(spec[0])
-    ax2 = fig.add_subplot(spec[1], projection='3d')
-    ax3 = fig.add_subplot(spec[2], )
+    from pathlib import Path
+    path = Path('./normal_2d/')
+    path.mkdir(exist_ok=True)
+    fig, ax1, ax2, ax3 = create_canvas_vertical()
     # create a figure updater
     nframes=100
     ud = UpdateFigure(ax1, ax2, ax3)
     ud.cov = np.array([[1,-0.8],[-0.8,1]])
     ud.set_target('stretch', np.diag([1,4]),nframes)
     # user FuncAnimation to generate frames of animation
+    plt.savefig(path/'test_gauss.pdf')
     anim = FuncAnimation(fig, ud, frames=nframes, blit=True)
     # save animation as *.mp4
-    anim.save('2d_gaussian_2.mp4', fps=20, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+    anim.save(path/'2d_gaussian_stretch.mp4', fps=20, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%

@@ -1,6 +1,9 @@
 #%%
+from pathlib import Path
+path = Path('./normal_2d/')
+path.mkdir(exist_ok=True)
 from gaussian2d import *
-fig = plt.figure(figsize=(10,5),dpi=400,)
+fig = plt.figure(figsize=(10,5),)
 spec = gridspec.GridSpec(1, 1, 
     left=0.10, right=0.55, top=0.95, bottom=0.05, 
     figure=fig)
@@ -20,16 +23,15 @@ eig, eigvec = np.linalg.eigh(np.array([[1,-1.6],[-1.6,4]]))
 # print(eigvec@np.array([[1,-1.6],[-1.6,4]])@eigvec.T)
 ud.set_target('stretch', np.diag(eig), nframes)
 anim = FuncAnimation(fig, ud, frames=nframes, blit=True)
-anim.save('2d_gaussian1.mp4', fps=20, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
-
+anim.save(path/'2d_gaussian1.mp4', fps=20, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 ud.cov = np.diag(eig)
 theta = np.arctan(eigvec[1,0]/eigvec[1,1])
 ud.set_target('rotation', theta, nframes)
 anim = FuncAnimation(fig, ud, frames=nframes, blit=True)
-anim.save('2d_gaussian2.mp4', fps=20, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'2d_gaussian2.mp4', fps=20, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 
 ud.cov = np.array([[1,-1.6],[-1.6,4]])
 ud.set_target('translation', np.ones(2), nframes)
 anim = FuncAnimation(fig, ud, frames=nframes, blit=True)
-anim.save('2d_gaussian3.mp4', fps=20, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'2d_gaussian3.mp4', fps=20, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%

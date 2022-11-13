@@ -41,11 +41,16 @@ conda env create -y -f requirements.yml
     - `random_gen_demo.py`
 
 9. 二维正态分布
+    - `cpu_ram.py`
+    - `cpu_ram_3d.py`
     - `gaussian2d.py`
     - `gaussian2d_evolve.py`
-    - `gaussian2d_rotate.py`
-    - `2d_gaussian_margin.py`
     - `gaussian2d_evolve_new.py`
+    - `gaussian2d_morph.py`
+    - `2d_gaussian_proj.py`
+    - `2d_gaussian_margin.py`
+    - `2d_gaussian_margin_snapshot.py`
+    - `gaussian2d_rotate.py`
 
 10. 数学期望（选自第四章：随机变量的数字特征）
     - `discretize_func.py`
