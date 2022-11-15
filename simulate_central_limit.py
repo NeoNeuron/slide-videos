@@ -3,14 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.rcParams['axes.labelsize'] = 16
 from matplotlib.animation import FuncAnimation
-from scipy.stats import binom, bernoulli, boltzmann
+from scipy.stats import binom, bernoulli, boltzmann, norm
 
-def Gaussian(mean, var):
-    def _wraper(x):
-        _buffer = np.exp(-(x-mean)**2/2/var)
-        return _buffer/_buffer.sum()
-    return _wraper
-    
 class UpdateHistogram():
     '''Update constrained historgram.
     
@@ -37,7 +31,7 @@ class UpdateHistogram():
             self.edge_centers, np.zeros(self.bins),
             width = self.bar_width,
             color='#108B96')
-        # gauss = Gaussian(mean, var)
+        # gauss = norm(loc=mean, scale=var)
         # self.ax.plot(edges, gauss(edges), ls='--', color='#B72C31', label='高斯模型估计')
         # self.ax.set_ylim(0,gauss(edges).max()*1.2)
         # self.ax.legend(loc=1, fontsize=14)
@@ -61,7 +55,7 @@ class UpdateHistogram():
         if self.xlabel_scale:
             self.ax.set_xticklabels(self.ax.get_xticks()*self.xlabel_scale)
         self.ax.set_ylabel('概率密度')
-        self.ax.set_xlabel('真实上座人数')
+        self.ax.set_xlabel('需要登机人数')
         self.ax.set_title(f'售票数 : {0:5d}', fontsize=20)
         self.number_of_sample_list = [1,2,3,4,5,8,12,18,28,43,65,99,151,230, 350]
         self.color = plt.cm.Oranges(0.8*np.arange(len(self.number_of_sample_list))/len(self.number_of_sample_list))
@@ -136,9 +130,11 @@ class UpdateHistogram():
 
     def _draw_gauss(self, i):
         margin = np.sum(self.data[:,:self.number_of_sample_list[i]], axis=1, dtype=float)
-        gauss = Gaussian(margin.mean(), margin.std()**2)
+        gauss = norm(loc=margin.mean(), scale=margin.std())
+        xlim = self.ax.get_xlim()
+        x_gauss = np.linspace(xlim[0], xlim[-1], 101)
         line, = self.ax.plot(
-            self.edge_centers, gauss(self.edge_centers), 
+            x_gauss, gauss.pdf(x_gauss), 
             ls='--', color=self.color[i],
             label='高斯拟合')
         self.lines.append(line)
@@ -222,10 +218,13 @@ class UpdateCurve():
 
     def set_frame_numbers(self, number_set):
         self.number_of_sample_list = number_set
-
+#%%
 if __name__ == '__main__':
     # Simulate Bernoulli random tests
-
+    #%%
+    from pathlib import Path
+    path = Path('./central_limit_theorem/')
+    path.mkdir(exist_ok=True)
     my_distribution = bernoulli
     my_dist_args = dict(
         p=0.9,
@@ -237,8 +236,8 @@ if __name__ == '__main__':
     attendence = my_distribution.rvs(**my_dist_args, size=(K,n), random_state=1240)
 
     fig, ax = plt.subplots(
-        1,1, figsize=(4,3.5), dpi=200, 
-        gridspec_kw=dict(left=0.18, right=0.95, bottom=0.24))
+        1,1, figsize=(4,3),
+        gridspec_kw=dict(left=0.18, right=0.95, bottom=0.18))
 
     zscore = False
     uh = UpdateHistogram(
@@ -246,20 +245,48 @@ if __name__ == '__main__':
         zscore=zscore, autolim=not zscore, 
         fade=False, envelope_curve='joint')
     uh.ax.set_ylim(0,0.5)
-    if zscore:
-        uh.ax.set_xlabel(r'$\frac{Y_n-EY_n}{\sqrt{DY_n}}$', fontsize=14)
-        x_grid = np.linspace(-10,10,400)
-        normal_curve = Gaussian(0,1)(x_grid)/(x_grid[1]-x_grid[0])
-        uh.ax.plot(x_grid, normal_curve, 'r')
-    else:
-        uh.ax.set_xlabel(r'$Y_n$', fontsize=14)
-    uh.ax.set_title(r'$n$ : '+uh.ax.get_title()[-5:], fontsize=20)
-    number_list = [1,2,3,4,5,8,12,18,28,43,65,99,151,230,350]
-    uh.set_frame_numbers = number_list
-    uh.set_colors = plt.cm.Oranges(0.8*np.arange(len(number_list)/len(number_list)))
+    # if zscore:
+    #     uh.ax.set_xlabel(r'$\frac{Y_n-EY_n}{\sqrt{DY_n}}$', fontsize=14)
+    #     x_grid = np.linspace(-10,10,400)
+    #     normal_curve = Gaussian(0,1)(x_grid)/(x_grid[1]-x_grid[0])
+    #     uh.ax.plot(x_grid, normal_curve, 'r')
+    # else:
+    #     uh.ax.set_xlabel(r'$Y_n$', fontsize=14)
+    # uh.ax.set_title(r'$n$ : '+uh.ax.get_title()[-5:], fontsize=20)
+    number_list = np.array([1,2,3,4,5,6,8,12,18,28,43,65,99,151,230,350])
+    number_list = np.tile(number_list, (3,1)).T.flatten()
+    uh.set_frame_numbers(number_list)
+    uh.set_colors(plt.cm.Oranges(0.8*np.arange(len(number_list))/len(number_list)))
 
-    anim = FuncAnimation(fig, uh, frames=16, blit=True)
+    anim = FuncAnimation(fig, uh, frames=16*3, blit=True)
     fname = "evolving_bernoulli.mp4"
-    anim.save(fname, fps=1, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+    anim.save(path/fname, fps=4, dpi=300, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 
+    # %%
+
+    fig, ax = plt.subplots(
+        1,1, figsize=(4,3),
+        gridspec_kw=dict(left=0.18, right=0.95, bottom=0.18))
+    uh = UpdateHistogram(
+        ax, attendence, (-n,n), 
+        zscore=False, autolim=False, 
+        fade=False, envelope_curve='gauss')
+    number_list = np.array([1,2,3,4,5,6,8,12,18,28,43,65,99,151,230,350])
+    uh.set_frame_numbers(number_list)
+    colors = np.zeros((len(number_list), 3))
+    colors[:,0] = 1
+    uh.ax.grid()
+    uh.set_colors(colors)
+    uh.ax.set_xlim(-1,3)
+    uh.ax.set_ylim(0,1.4)
+    uh(0)
+    fig.savefig(path/'frame0.png', dpi=300)
+    uh.ax.set_xlim(5,15)
+    uh.ax.set_ylim(0,0.5)
+    uh(7)
+    fig.savefig(path/'frame7.png', dpi=300)
+    uh.ax.set_xlim(280,360)
+    uh.ax.set_ylim(0,0.09)
+    uh(15)
+    fig.savefig(path/'frame15.png', dpi=300)
 # %%

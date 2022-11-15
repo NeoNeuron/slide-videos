@@ -54,23 +54,24 @@ if __name__ == '__main__':
     fig, ax = plt.subplots(
         1,1, figsize=(4,3.5), dpi=200, 
         gridspec_kw=dict(left=0.18, right=0.95, bottom=0.24))
-
+    
+    env_curve = None if zscore else 'joint'
     uh = UpdateHistogram(
         ax, attendence, (-300,300), 
         zscore=zscore, autolim=not zscore, 
-        fade=zscore, envelope_curve='joint', 
+        fade=zscore, envelope_curve=env_curve, 
         xlabel_scale=0.1)
     uh.ax.set_ylim(my_dist_args['norm']['ylim'])
     uh.ax.set_ylabel('概率密度')
     if zscore:
-        uh.ax.set_xlabel(r'$Z_n$的标准化', fontsize=14)
+        uh.ax.set_xlabel(r'$Z_n$的标准化')
         # uh.ax.set_xlabel(r'$\frac{1}{\sigma/\sqrt{n}}\left(\frac{1}{n}\sum_i^n X_i-\mu\right)$', fontsize=14)
         x_grid = np.linspace(-10,10,400)
         normal_curve = Gaussian(0,1)(x_grid)/(x_grid[1]-x_grid[0])
         uh.ax.plot(x_grid, normal_curve, 'r')
         # uh.ax.set_title(r'$n$ : '+uh.ax.get_title()[-5:], fontsize=20)
     else:
-        uh.ax.set_xlabel('总利润(万)', fontsize=14)
+        uh.ax.set_xlabel('总利润(万)')
         # uh.ax.set_xlabel(r'$\sum_i^n X_i$', fontsize=14)
     # if 'xlim' in item:
     #     uh.ax.set_xlim(*item['xlim'])
