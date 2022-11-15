@@ -9,7 +9,6 @@ plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'
 plt.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
 
-plt.rcParams["font.size"] = 16
 plt.rcParams["xtick.labelsize"] = 16
 plt.rcParams["ytick.labelsize"] = 16
 plt.rcParams["axes.spines.top"] = False
@@ -31,8 +30,8 @@ ax.pcolormesh(xx,yy,xysurf, cmap='turbo',lw=0, alpha=0.9)
 ax.axis('scaled')
 ax.set_xlabel('x', fontsize=40)
 ax.set_ylabel('y', fontsize=40)
-ax.set_xticks([-4,-2,0,2,4])
-ax.set_yticks([-4,-2,0,2,4])
+ax.set_xticks([-4,-2,0,2,4], fontsize=20)
+ax.set_yticks([-4,-2,0,2,4], fontsize=20)
 fig.savefig(path/'normal3d_overview.png', dpi=300)
 # plot 3d surface
 fig = plt.figure(figsize=(6,5.5))

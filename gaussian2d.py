@@ -8,8 +8,8 @@ from scipy.stats import multivariate_normal as mn
 plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'
 plt.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
-plt.rcParams['xtick.labelsize']=25
-plt.rcParams['ytick.labelsize']=25
+plt.rcParams['xtick.labelsize']=20
+plt.rcParams['ytick.labelsize']=20
 
 class UpdateFigure:
     def __init__(self, ax1, ax2, ax3):
@@ -56,12 +56,15 @@ class UpdateFigure:
         ax2.tick_params(axis='z', which='major', pad=10)
         ax2.zaxis.set_rotate_label(False)
         # ax2.set_zlabel(r'$f(y)$', rotation=0, fontsize=20)
-        xticks=[-4,-2,0,2,4]
-        yticks=[-4,-2,0,2,4]
-        zticks=[0,.1,.2]
-        ax2.set_xticks(xticks)
-        ax2.set_yticks(yticks)
-        ax2.set_zticks(zticks)
+        xticks=np.linspace(-4,4,9,dtype=int)
+        yticks=np.linspace(-4,4,9,dtype=int)
+        zticks=np.arange(5)*5e-2
+        ax2.set_xticks(xticks,minor=True)
+        ax2.set_yticks(yticks,minor=True)
+        ax2.set_zticks(zticks,minor=True)
+        ax2.set_xticks([-3,0,3],)
+        ax2.set_yticks([-3,0,3],)
+        ax2.set_zticks([0,.1,.2],)
         ax2.set_xlim(xticks[0], xticks[-1])
         ax2.set_ylim(yticks[0], yticks[-1])
         ax2.set_zlim(zticks[0], zticks[-1])
@@ -81,10 +84,13 @@ class UpdateFigure:
         ax3.axis('scaled')
         ax3.yaxis.tick_right()
         ax3.yaxis.set_label_position('right')
-        ax3.set_xticks([-4,-2,0,2,4])
-        ax3.set_yticks([-4,-2,0,2,4])
+        ax3.set_xticks(xticks,minor=True)
+        ax3.set_yticks(yticks,minor=True)
+        ax3.set_xticks([-3,0,3])
+        ax3.set_yticks([-3,0,3])
         ax3.set_xlabel(r'$x$', fontsize=40, labelpad=0)
         ax3.set_ylabel(r'$y$', fontsize=40, rotation=0, va='center', labelpad=10)
+        self.ax3 = ax3
     
     def set_target(self, trans_type, diff, nframe):
         self.trans_type = trans_type
@@ -160,6 +166,7 @@ if __name__ == '__main__':
     ud.set_target('stretch', np.diag([1,4]),nframes)
     # user FuncAnimation to generate frames of animation
     plt.savefig(path/'test_gauss.pdf')
+    plt.savefig(path/'test_gauss.png', dpi=300)
     anim = FuncAnimation(fig, ud, frames=nframes, blit=True)
     # save animation as *.mp4
     anim.save(path/'2d_gaussian_stretch.mp4', fps=20, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])

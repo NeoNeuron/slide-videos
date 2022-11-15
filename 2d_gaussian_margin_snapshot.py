@@ -5,7 +5,6 @@ path.mkdir(exist_ok=True)
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from matplotlib.animation import FuncAnimation
 import matplotlib.gridspec as gridspec
 from scipy.stats import multivariate_normal as mn
 # %%
@@ -59,6 +58,7 @@ counter = 0
 def snapshot():
     global counter
     fig.savefig(path/f'2d_gaussian_margin_snapshot{counter:d}.pdf')
+    fig.savefig(path/f'2d_gaussian_margin_snapshot{counter:d}.png', dpi=300)
     counter += 1
 
 # ====================
@@ -68,11 +68,14 @@ ax1 = fig.add_subplot(spec1[0], projection='3d')
 surf = ax1.plot_surface(xx, yy, xysurf, cmap=cm, alpha=0.4,
                 rstride=1, cstride=1, zorder=0, vmin=vmin, vmax=vmax)
 # ax1.view_init(10, None)
-ax1.set_xlabel(r'$x$', fontsize=30, labelpad=20)
-ax1.set_ylabel(r'$y$', fontsize=30, labelpad=20)
-ax1.tick_params(axis='x', which='major', pad=8)
-ax1.tick_params(axis='y', which='major', pad=8)
-ax1.tick_params(axis='z', which='major', pad=5)
+ax1.set_xlabel(r'$x$', fontsize=30, labelpad=10)
+ax1.set_ylabel(r'$y$', fontsize=30, labelpad=10)
+ax1.tick_params(axis='x', which='major', pad=2)
+ax1.tick_params(axis='y', which='major', pad=2)
+ax1.tick_params(axis='z', which='major', pad=4)
+ax1.tick_params(axis='x', labelsize=14)
+ax1.tick_params(axis='y', labelsize=14)
+ax1.tick_params(axis='z', labelsize=14)
 ax1.zaxis.set_rotate_label(False)
 # ax1.set_zlabel(r'$f(y)$', rotation=0, fontsize=20)
 xticks=[0,0.5,1]
@@ -99,7 +102,6 @@ shade2 = Poly3DCollection([verts2],
     facecolor=colors['green'], edgecolor='None', alpha=0.7, zorder=1) # Add a polygon instead of fill_between
 ax1.add_collection3d(shade2)
 snapshot()
-
 # ====================
 # draw conditional probability
 # ====================
@@ -108,22 +110,23 @@ p_cond = np.array(verts1[:-2])
 line, = ax2.plot(p_cond[:,0], p_cond[:,2], lw=5, color=colors['blue'])
 shade_2d = ax2.fill_between(p_cond[:,0],0, p_cond[:,2], color=colors['red'], alpha=0.8)
 ax2.set_xlabel(r'$x$', fontsize=30)
-ax2.text(-0.185,0.5,r'$f(x|\qquad\qquad)$', fontsize=25,
+ax2.text(-0.155,0.5,r'$f(x|\qquad\qquad)$', fontsize=25,
     ha='center', va='center', rotation=90, color='k', transform=ax2.transAxes)
 ax2.set_ylabel(r'$y=%.2f$'%y0, color='red', fontsize=24, y=0.59)
 ax2.set_xticks([0,0.2,0.4,0.6,0.8,1.0], fontsize=20)
-ax2.tick_params(axis='x', which='major', pad=10)
+ax2.tick_params(axis='x', which='major', pad=5)
 ax2.set_yticks([0,5,10,15], fontsize=20)
 ax2.set_xlim(xticks[0], xticks[-1])
 ax2.set_ylim(zticks[0], zticks[-1])
 ax2.spines['top'].set_visible(False)
 ax2.spines['right'].set_visible(False)
+ax2.tick_params(axis='x', labelsize=14)
+ax2.tick_params(axis='y', labelsize=14)
 snapshot()
-
 # ====================
 # draw x1=0.3 vertical line
 # ====================
-ax2.scatter([0.3],[0],s=600, marker='x', lw=8, c='#92D050',zorder=10).set_clip_on(False)
-ax2.axvline(0.3, ls='--', lw=5, c='#92D050')
+ax2.scatter([0.3],[0],s=200, marker='x', lw=4, c='#92D050',zorder=10).set_clip_on(False)
+ax2.axvline(0.3, ls='--', lw=3, c='#92D050')
 print(mn.pdf((0.3,0.7), mean, cov))
 snapshot()
