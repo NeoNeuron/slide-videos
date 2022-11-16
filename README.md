@@ -33,6 +33,8 @@ conda env create -y -f requirements.yml
 7. 正态分布
     - `evolve_norm.py`
     - `normal_figures.py`
+    - `standardize_norm.py`
+    - `normal_distribution_figs.py`
 
 8. 随机变量的函数
     - `3d_projection.py`
