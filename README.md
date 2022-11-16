@@ -91,6 +91,7 @@ conda env create -y -f requirements.yml
     - `general_distributions2.py`
 
 15. 矩估计
+    - `multi_moment.py`
     - `moment_estimation.py`
 
 17. 点估计的评价标准
