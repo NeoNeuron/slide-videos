@@ -42,7 +42,7 @@ ax.axis('off')
 # %%
 #数据
 np.random.seed(1901)
-mean,std=650,10 #均值，标准差
+mean,std=600,10 #均值，标准差
 size=10000
 data1=np.random.normal(mean,std,int(size*1))
 #print(data1.shape,data1_new.shape)

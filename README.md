@@ -78,8 +78,6 @@ conda env create -y -f requirements.yml
 13. 大数定律（选自第五章：大数定律和中心极限定理）
     - `flipping_coin.py`
     - `Chebyshev.py`
-    - `previous_topics/chebyshev.ipynb`
-    - `previous_topics/chebyshev2.ipynb`
     - `previous_topics/chebyshev3.ipynb`
     - `lln.py`
     - `simulate_central_limit.py`
