@@ -98,6 +98,8 @@ conda env create -y -f requirements.yml
 17. 点估计的评价标准
     - `point_estimation.py`
     - `bulb_lifetime.py`
+    - `lln.py`
+
 
 19. 正态总体的假设检验（选自第八章：假设检验）
     - `previous_topics/hypothesis_test.ipynb`

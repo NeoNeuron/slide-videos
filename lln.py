@@ -12,7 +12,7 @@ plt.rcParams["xtick.labelsize"] = 14
 plt.rcParams["ytick.labelsize"] = 14
 plt.rcParams["axes.spines.top"] = False
 plt.rcParams["axes.spines.right"] = False
-from scipy.ndimage.filters import gaussian_filter1d
+from scipy.ndimage import gaussian_filter1d
 #%%
 class UpdateFigure:
     def __init__(self, 
@@ -28,8 +28,9 @@ class UpdateFigure:
 
         self.ax.set_xlim(1,data.shape[1])
         self.ax.set_ylim(-1,1)
+        self.ax.set_yticklabels([])
         self.ax.set_xlabel('n', fontsize=24)
-        self.ax.set_ylabel(r'$Y_n$', fontsize=24)
+        self.ax.set_ylabel(r'$\hat{\theta}$', fontsize=24)
         # self.line_symbolic =self.ax.plot(np.arange(data.shape[1]),dx*np.sqrt(np.arange(data.shape[1])), ls='--', color='k')
         self.line =self.ax.plot([],[], zorder=1, color='#55B046')
         self.xc = 0.0
@@ -70,7 +71,7 @@ class UpdateFigure:
 
         return self.line
 # %%
-fig, ax = plt.subplots(1,1, figsize=(10,4),dpi=400, )
+fig, ax = plt.subplots(1,1, figsize=(10,4),)
 
 np.random.seed(2022)
 data = np.random.rand(400, 2000)*2-1
