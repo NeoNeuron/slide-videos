@@ -114,6 +114,7 @@ conda env create -y -f requirements.yml
     - `lr_examples.py`
     - `lr_height_CI.py`
     - `lr_height_CI_movie.py`
+    - `least_square_3d.py`
 
 ## Others Chapters
 
