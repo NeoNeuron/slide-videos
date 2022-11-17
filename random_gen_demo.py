@@ -1,4 +1,7 @@
 # %%
+from pathlib import Path
+path = Path('./function_of_random_variables/')
+path.mkdir(exist_ok=True)
 from math import gamma
 import warnings
 warnings.filterwarnings('ignore')
@@ -66,7 +69,7 @@ class UpdateFigure:
         # scatter plot:
         self.line_main, = ax_main.plot(x_grid, self.transfer(x_grid),
             color=self.colors['transfer'],lw=3)
-        self.text = ax_main.text(0.45, 0.5, r'$x=F_x^{-1}(y)$', ha='left', 
+        self.text = ax_main.text(0.41, 0.55, r'$x=F_x^{-1}(y)$', ha='left', va='bottom',
             color=self.colors['transfer'], transform=ax_main.transAxes, fontsize=40)
 
         # now determine nice limits by hand:
@@ -77,9 +80,8 @@ class UpdateFigure:
         ax_main.set_xticks([0,0.5,1])
         self.ax_main = ax_main
         # initialize the bins of histogram
-        ax_main.text(0.5, -0.12,  r'$y$',    transform=ax_main.transAxes,  fontsize=30)
-        ax_main.text(-0.12, 0.55,  r'$x$',    transform=ax_main.transAxes,  fontsize=30)
-        ax_main.text(-0.16, 0.45,  '天数',    transform=ax_main.transAxes,  fontsize=30)
+        ax_main.text(0.5, -0.12, r'$y$', transform=ax_main.transAxes,  fontsize=30)
+        ax_main.text(-0.17, 6., '潜伏期\n天数($x$)', ha='center', va='center',  fontsize=30)
         ax_top.text(-0.160, 0.55, r'$f(y)$', transform=ax_top.transAxes,   fontsize=30)
         ax_right.text(0.3, -0.12, r'$f(x)$', transform=ax_right.transAxes, fontsize=30)
 
@@ -252,11 +254,11 @@ class UpdateFigure:
 
         return self.bars_right
 
-fig = plt.figure(figsize=(12,10),dpi=400)
+fig = plt.figure(figsize=(9.6,8))
 
 # definitions for the axes
-left, width = 0.10, 0.6
-bottom, height = 0.10, 0.6
+left, width = 0.18, 0.6
+bottom, height = 0.12, 0.65
 left_h = left + width + 0.01
 bottom_h = bottom + height + 0.02
 rect_main = [left, bottom, width, height]
@@ -282,10 +284,10 @@ axHisty.yaxis.set_major_formatter(nullfmt)
 
 # create a figure updater
 np.random.seed(2022)
-data = np.random.rand(400)
+data = np.random.rand(280)
 
 # controlling video playing speed
-nframes=480
+nframes=360
 fps=12
 frame_flag = np.ones(nframes+1, dtype=bool)
 frame_flag[:75]=False
@@ -293,12 +295,12 @@ frame_flag[1::6]=True   # 2 frame / second
 frame_flag[31::4]=True  # 3 frame / second
 frame_flag[55::2]=True  # 6 frame / second
 ud = UpdateFigure(axMain, axHisty, axHistx, data, frame_flag)
-plt.savefig('test.pdf')
+plt.savefig(path/'test.pdf')
 #%%
 # user FuncAnimation to generate frames of animation
 anim = FuncAnimation(fig, ud, frames=nframes+1, blit=True)
 # save animation as *.mp4
-anim.save('random_gen_demo.mp4', fps=fps, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'random_gen_demo.mp4', fps=fps, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
 from scipy import stats
 fig = plt. figure(figsize=(20,10), dpi=200)

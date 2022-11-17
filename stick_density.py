@@ -1,4 +1,7 @@
 # %%
+from pathlib import Path
+path = Path('./function_of_random_variables/')
+path.mkdir(exist_ok=True)
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
@@ -50,8 +53,8 @@ class UpdateFigure:
         x_grid = np.linspace(0,2,100)
         # scatter plot:
         self.line_main, = ax_main.plot(x_grid, self.transfer(x_grid),lw=3,color=self.colors['transfer'],)
-        self.text = ax_main.text(0.5, 0.8, r'$y=g(x)$', ha='left', color=self.colors['transfer'], fontsize=26)
-        ax_main.set_xlabel(r'$x$', fontsize=30)
+        self.text = ax_main.text(1.2, 0.75, r'$y=g(x)$', ha='right', color=self.colors['transfer'], fontsize=26)
+        ax_main.set_xlabel(r'$x$', fontsize=30, labelpad=-15)
         ax_main.set_ylabel(r'$y$', fontsize=30, rotation=0)
 
         # now determine nice limits by hand:
@@ -66,7 +69,7 @@ class UpdateFigure:
         self.ax_main = ax_main
         # initialize the bins of histogram
         ax_top.set_ylabel(r'$f(x)$', fontsize=30, rotation=0)
-        ax_right.set_xlabel(r'$f(y)$', fontsize=30)
+        ax_right.set_xlabel(r'$f(y)$', fontsize=30, labelpad=-10)
 
         ax_top.set_xlim(self.ax_main.get_xlim())
         ax_top.set_ylim(0,2.1)
@@ -92,7 +95,7 @@ class UpdateFigure:
         # draw points
         # ====================
         xp = 0.3
-        self.ddxp = 0.0001
+        self.ddxp = 1.5e-4
         self.dxp = 0.1
 
         # ====================
@@ -182,17 +185,17 @@ class UpdateFigure:
 
         return [self.shade_t,]
 
-fig = plt.figure(figsize=(10,10),dpi=400)
+fig = plt.figure(figsize=(10,5))
 # definitions for the axes
-left, width = 0.15, 0.50
-bottom, height = 0.15, 0.25
+left, width = 0.1, 0.55
+bottom, height = 0.1, 0.55
 left_h = left + width + 0.02
 bottom_h = bottom + height + 0.02
 rect_main = [left, bottom, width, height]
-rect_histx = [left, bottom_h, width, 0.15]
+rect_histx = [left, bottom_h, width, 0.3]
 rect_histy = [left_h, bottom, 0.3, height]
 
-rect_colorbar = [left_h, bottom_h+0.08, 0.27, 0.05]
+rect_colorbar = [left_h+0.03, bottom_h+0.08, 0.25, 0.05]
 
 axMain = plt.axes(rect_main)
 axHistx = plt.axes(rect_histx)
@@ -214,10 +217,11 @@ axHisty.yaxis.set_major_formatter(nullfmt)
 
 # create a figure updater
 ud = UpdateFigure(axMain, axHisty, axHistx, axColorbar)
-nframes=180
+plt.savefig(path/'test_stick.pdf')
 # user FuncAnimation to generate frames of animation
 # %%
+nframes=48*3
 anim = FuncAnimation(fig, ud, frames=nframes+1, blit=True)
 # save animation as *.mp4
-anim.save('stick_density.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'stick_density.mp4', fps=48, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
