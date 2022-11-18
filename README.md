@@ -37,6 +37,7 @@ conda env create -y -f requirements.yml
     - `normal_distribution_figs.py`
 
 8. 随机变量的函数
+    - `incubation.py`
     - `stock_price.py`
     - `3d_projection.py`
     - `height_histogram.py`
