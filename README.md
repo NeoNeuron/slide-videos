@@ -118,6 +118,7 @@ conda env create -y -f requirements.yml
     - `lr_height_CI.py`
     - `lr_height_CI_movie.py`
     - `least_square_3d.py`
+    - `Galton_height_regression.py`
 
 ## Others Chapters
 
