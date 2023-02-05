@@ -68,6 +68,7 @@ conda env create -y -f requirements.yml
     - `previous_topics/variance.ipynb`
     - `bm.py`
     - `dot_motion.py`
+    - `stock_optimization.py`
 
 12. 协方差和相关系数（选自第四章：随机变量的数字特征）
     - `corr_v1.py`
