@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from matplotlib.ticker import NullFormatter 
 from scipy.stats import expon
 # matplotlib parameters to ensure correctness of Chinese characters 
 plt.rcParams["font.family"] = 'sans-serif'
@@ -11,6 +12,8 @@ plt.rcParams['axes.unicode_minus']=False # correct minus sign
 plt.rcParams["font.size"] = 20
 plt.rcParams["xtick.labelsize"] = 24
 plt.rcParams["ytick.labelsize"] = 24
+from pathlib import Path
+path = Path('./point_estimation/')
 
 #%%
 class UpdateFigure_scatter_hist:
@@ -41,6 +44,7 @@ class UpdateFigure_scatter_hist:
             markersize=8,
             markerfacecolor='none',
             markeredgewidth=2)
+        self.line_main.set_clip_on(False)
 
         # now determine nice limits by hand:
         ymax = np.max(np.fabs(data))
@@ -108,6 +112,7 @@ class UpdateFigure_scatter:
             markersize=8,
             markerfacecolor='none',
             markeredgewidth=2)
+        self.line_main.set_clip_on(False)
 
         # now determine nice limits by hand:
         ymax = np.max(np.fabs(data))
@@ -133,27 +138,44 @@ n = 10 # number of accumulated samples
 K = 200 # number of random tests
 
 # generate sampling data
-rv = expon.rvs(scale=5, size=(K,n), random_state=99239)
+rv = expon.rvs(scale=5, size=(K,n), random_state=9923)
 theta1 = np.mean(rv, axis=1, dtype=float)
-theta2 = np.min(rv, axis=1)
-theta3 = np.min(rv, axis=1)*n
+theta2 = np.median(rv, axis=1)
+factor = (1/(n-np.arange(int(n/2)))).sum()
+theta3 = np.median(rv, axis=1)/factor
 
-fig, ax = plt.subplots(1,2,figsize=(10.5,7),dpi=100, 
-                       gridspec_kw={'width_ratios':[3,1], 'wspace':0.1, 'left':0.12, 'right':0.98, 'bottom':0.15, 'top':0.95})
-ax[0].set_xlabel('采样次数', fontsize=40)
-ax[0].set_ylabel(r'$\hat{\theta}_1$', fontsize=40, usetex=True, rotation=0, ha='right', va='center')
-ax[1].set_xlabel('频数', fontsize=40)
-# no labels
-from matplotlib.ticker import NullFormatter 
-ax[1].yaxis.set_major_formatter(NullFormatter())
-[axi.axhline(5, color='r',ls='--') for axi in ax]
+thetas = [theta1, theta2, theta3, theta1]
+ylabels = [r'$\hat{\theta}_1$', r'$\hat{\theta}_2$', r'$\hat{\theta}_2$', r'$\hat{\theta}_1$']
+fname_tags = ['mean', 'median', 'median_fix', 'mean_large_range']
+ylims = [(-0.5,12.9),(-0.5,12.9),(-0.5,20.5), (-0.5,20.5)]
 
-# create a figure updater
-ud = UpdateFigure_scatter_hist(theta1, ax[0], ax[1], (-0.5,32.5))
-# user FuncAnimation to generate frames of animation
-anim = FuncAnimation(fig, ud, frames=240, blit=True)
-# save animation as *.mp4
-anim.save('point_estimation_theta1.mp4', fps=24, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+def gen_animation(theta, ylabel, fname_tag, ylim):
+    fig, ax = plt.subplots(1,2,figsize=(10.5,7),dpi=100, 
+                       gridspec_kw={'width_ratios':[3,1], 
+                                    'wspace':0.1, 
+                                    'left':0.12, 'right':0.98, 
+                                    'bottom':0.15, 'top':0.95})
+    ax[0].set_xlabel('采样序号', fontsize=40)
+    ax[0].set_ylabel(ylabel, fontsize=40, usetex=True, rotation=0, ha='right', va='center')
+    ax[1].set_xlabel('频数', fontsize=40)
+    # no labels
+    ax[1].yaxis.set_major_formatter(NullFormatter())
+    [axi.axhline(5, color='r',ls='--', lw=3) for axi in ax]
+
+    # create a figure updater
+    ud = UpdateFigure_scatter_hist(theta, ax[0], ax[1], ylim)
+    # user FuncAnimation to generate frames of animation
+    anim = FuncAnimation(fig, ud, frames=240, blit=True)
+    # save animation as *.mp4
+    anim.save(path/f'point_estimation_{fname_tag:s}.mp4', fps=24, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+
+for theta, ylabel, fname_tag, ylim in zip(thetas, ylabels, fname_tags, ylims):
+    print(theta.max())
+    print(ylabel)
+    print(fname_tag)
+    print(ylim)
+    print('-------')
+    gen_animation(theta, ylabel, fname_tag, ylim)
 # %%
 # =========================================================
 n = 10 # number of accumulated samples
@@ -163,29 +185,45 @@ K = 200 # number of random tests
 theta1 = []
 theta2 = []
 theta3 = []
-ns = [5, 30, 90, 200, 500]
+ns = [6, 30, 90, 200, 500]
 for _n in ns:
-    rv = expon.rvs(scale=5, size=(40,_n), random_state=99239)
+    rv = expon.rvs(scale=5, size=(40,_n), random_state=9923)
     theta1.append(np.mean(rv, axis=1, dtype=float))
-    theta2.append(np.min(rv, axis=1))
-    theta3.append(np.min(rv, axis=1)*_n)
+    theta2.append(np.median(rv, axis=1))
+    factor = (1/(_n-np.arange(int(_n/2)))).sum()
+    theta3.append(np.median(rv, axis=1)/factor)
 theta1 = np.hstack(theta1)
 theta2 = np.hstack(theta2)
 theta3 = np.hstack(theta3)
 
-fig, ax = plt.subplots(1,1,figsize=(10.5,7),dpi=100, 
-                       gridspec_kw={'left':0.12, 'right':0.98, 'bottom':0.15, 'top':0.95})
-ax.set_xlabel('采样次数', fontsize=40)
-ax.set_ylabel(r'$\hat{\theta}_2$', fontsize=40, usetex=True, rotation=0, ha='right', va='center')
-ax.set_xticks([0,40,80,120,160,200])
-ax.axhline(5, color='r',ls='--')
-for i in range(4):
-    ax.axvline(40*(i+1), color='gray',ls='--')
-for i in range(5):
-    ax.text(40*i+20, 28, f'n={ns[i]:d}', ha='center', va='center', fontsize=30)
-ud = UpdateFigure_scatter(theta3, ax, (-0.5,30))
-# user FuncAnimation to generate frames of animation
-anim = FuncAnimation(fig, ud, frames=240, blit=True)
-# save animation as *.mp4
-anim.save('point_estimation_theta1.mp4', fps=24, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+thetas = [theta1, theta3]
+ylabels = [r'$\hat{\theta}_1$', r'$\hat{\theta}_2$']
+fname_tags = ['mean', 'median_fix']
+ylims = [(-0.5,14.5), (-0.5,14.5)]
+
+def gen_activation2(theta, ylabel, fname_tag, ylim):
+    fig, ax = plt.subplots(1,1,figsize=(10.5,7),dpi=100, 
+                       gridspec_kw={'left':0.12, 'right':0.98, 
+                                    'bottom':0.15, 'top':0.95})
+    ax.set_xlabel('采样序号', fontsize=40)
+    ax.set_ylabel(ylabel, fontsize=40, usetex=True, rotation=0, ha='right', va='center')
+    ax.set_xticks([0,40,80,120,160,200])
+    ax.axhline(5, color='r',ls='--')
+    for i in range(4):
+        ax.axvline(40*(i+1), color='gray',ls='--')
+    for i in range(5):
+        ax.text(40*i+20, 12.7, f'n={ns[i]:d}', ha='center', va='center', fontsize=30)
+    ud = UpdateFigure_scatter(theta, ax, ylim)
+    # user FuncAnimation to generate frames of animation
+    anim = FuncAnimation(fig, ud, frames=240, blit=True)
+    # save animation as *.mp4
+    anim.save(path/f'point_estimation_var_n_{fname_tag}.mp4', fps=24, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+
+for theta, ylabel, fname_tag, ylim in zip(thetas, ylabels, fname_tags, ylims):
+    print(theta.max())
+    print(ylabel)
+    print(fname_tag)
+    print(ylim)
+    print('-------')
+    gen_activation2(theta, ylabel, fname_tag, ylim)
 # %%
