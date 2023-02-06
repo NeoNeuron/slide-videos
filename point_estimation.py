@@ -138,7 +138,7 @@ n = 10 # number of accumulated samples
 K = 200 # number of random tests
 
 # generate sampling data
-rv = expon.rvs(scale=5, size=(K,n), random_state=9923)
+rv = expon.rvs(scale=5, size=(K,n), random_state=99233)
 theta1 = np.mean(rv, axis=1, dtype=float)
 theta2 = np.median(rv, axis=1)
 factor = (1/(n-np.arange(int(n/2)))).sum()
@@ -147,7 +147,7 @@ theta3 = np.median(rv, axis=1)/factor
 thetas = [theta1, theta2, theta3, theta1]
 ylabels = [r'$\hat{\theta}_1$', r'$\hat{\theta}_2$', r'$\hat{\theta}_2$', r'$\hat{\theta}_1$']
 fname_tags = ['mean', 'median', 'median_fix', 'mean_large_range']
-ylims = [(-0.5,12.9),(-0.5,12.9),(-0.5,20.5), (-0.5,20.5)]
+ylims = [(-0,13),(-0,13),(-0.5,17.5), (-0.5,17.5)]
 
 def gen_animation(theta, ylabel, fname_tag, ylim):
     fig, ax = plt.subplots(1,2,figsize=(10.5,7),dpi=100, 
