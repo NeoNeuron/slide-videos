@@ -13,6 +13,8 @@ plt.rcParams["ytick.labelsize"] = 14
 plt.rcParams["axes.spines.top"] = False
 plt.rcParams["axes.spines.right"] = False
 from scipy.ndimage import gaussian_filter1d
+from pathlib import Path
+path = Path('./lln/')
 #%%
 class UpdateFigure:
     def __init__(self, 
@@ -32,10 +34,10 @@ class UpdateFigure:
         self.ax.set_xlabel('n', fontsize=24)
         self.ax.set_ylabel(r'$\hat{\theta}$', fontsize=24)
         # self.line_symbolic =self.ax.plot(np.arange(data.shape[1]),dx*np.sqrt(np.arange(data.shape[1])), ls='--', color='k')
-        self.line =self.ax.plot([],[], zorder=1, color='#55B046')
+        self.line =self.ax.plot([],[], zorder=1, lw=3, color='orange')
         self.xc = 0.0
         self.yc = 0.0
-        self.dot, =self.ax.plot([0],[0], 'o', color='#FFF600', ms=2, zorder=1)
+        self.dot, =self.ax.plot([0],[0], 'o', color='#FFF600', ms=6, zorder=1)
         self.stride = stride
         # Draw all samples
         data_all = np.cumsum(data, axis=1)/np.arange(1, data.shape[1]+1)
@@ -50,7 +52,9 @@ class UpdateFigure:
         factor = 10
         for sampling_point in (3, 20, 40, 70, 110, 160,):
             data_buff = self.data_resample[:,sampling_point]
-            val_range = (data_buff.min()*2, data_buff.max()*2)
+            
+            data_edge = np.abs(data_buff).max()*2
+            val_range = (-data_edge, data_edge)
             counts, bins = np.histogram(self.data_resample[:,sampling_point], bins=100, range=val_range, density=True)
             self.ax.plot(gaussian_filter1d(counts,sigma=6)*factor+ self.x_data[sampling_point], bins[1:], 'r')
             self.ax.fill_betweenx(
@@ -82,5 +86,5 @@ plt.tight_layout()
 # user FuncAnimation to generate frames of animation
 anim = FuncAnimation(fig, ud, frames=250, blit=True)
 # save animation as *.mp4
-anim.save('lln_movie.mp4', fps=48, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'lln_movie.mp4', fps=48, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%

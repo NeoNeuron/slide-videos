@@ -87,6 +87,8 @@ conda env create -y -f requirements.yml
     - `simulate_central_limit.py`
     - `general_lln.py`
     - `car.py`
+    - `integrate.py`
+    - `company_income.py`
 
 14. 中心极限定理（选自第五章：大数定律和中心极限定理）
     - `flight_test.py`
