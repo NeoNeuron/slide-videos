@@ -5,6 +5,7 @@ This repo provides scripts as generators for slides animation for probability an
 ## Requirements
 
 Install the following packages to ensure the successful excution of scripts
+
 ```bash
 conda env create -y -f requirements.yml
 ```
@@ -78,6 +79,8 @@ conda env create -y -f requirements.yml
     - `3d_bar.py`
     - `3d_bar_v2.py`
     - `previous_topics/covariance.ipynb`
+    - `corr_dep.py`
+    - `corr_morph.py`
 
 13. 大数定律（选自第五章：大数定律和中心极限定理）
     - `flipping_coin.py`

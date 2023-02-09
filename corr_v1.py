@@ -13,6 +13,9 @@ plt.rcParams["xtick.labelsize"] = 16
 plt.rcParams["ytick.labelsize"] = 16
 plt.rcParams["axes.spines.top"] = False
 plt.rcParams["axes.spines.right"] = False
+from pathlib import Path
+path = Path('./covariance/')
+path.mkdir(exist_ok=True)
 #%%
 class UpdateFigure:
     def __init__(self, 
@@ -92,5 +95,5 @@ ud = UpdateFigure(ax, ratio)
 # user FuncAnimation to generate frames of animation
 anim = FuncAnimation(fig, ud, frames=nframes, blit=True)
 # save animation as *.mp4
-anim.save('corr_v3_movie.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'corr_v3_movie.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
