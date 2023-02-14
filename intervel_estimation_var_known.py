@@ -63,12 +63,11 @@ car_marker = gen_marker('icons/car.svg',)
 # %%
 class UpdateDist:
     def __init__(self, ax0, ax_main,ax_colorbar,ax_bottom1,ax_bottom2):
-        self.success = 0
 
         self.ax0 = ax0
         xn, yn = 10, 1
         xx, yy = np.meshgrid(np.arange(xn), np.arange(yn))
-        self.sc_car  = ax0.scatter(xx.flatten(),yy.flatten(),s=10000, 
+        self.sc_car  = ax0.scatter(xx.flatten(),yy.flatten(),s=12000, 
                                    fc='w', ec='k', marker=car_marker)
         self.color = np.tile([0,32./255,96./255,1],(int(xn*yn),1))
         self.ax0.set_xlim(-1,xn)
@@ -82,30 +81,30 @@ class UpdateDist:
         ax_main.text(mean+0.3,-0.1,r'$\mu$',fontsize=50, va='top', ha='left')
         
         # 阴影部分
-        self.shadow=ax_main.fill_between([0,0],1,1,fc='b', alpha=0.3)
+        self.shadow=ax_main.fill_between([0,0],1,1,fc='#B4C7E7', alpha=0.3)
 
         # now determine nice limits by hand:
         xlim = (min(data_mean)-length-1, max(data_mean)+length+1)
         #ax_main.set_title('区间长度与统计量选取的关系',fontsize=40)
         ax_main.set_xlim(xlim)
-        ax_main.plot([xlim[0],xlim[1]],[0,0],linestyle='-',color='b',lw=5) 
+        ax_main.axhline(0, color='#2F5597',lw=5) 
         ax_main.set_ylim((-1,1))
         ax_main.set_yticks(())
         self.ax_main = ax_main 
         
         # bottom plot1:
         self.rects = ax_bottom1.barh([1,2], [0,0], ) #条形图
-        for rec, color in zip(self.rects, ( [0,176./255,80./255,1],[228./255,131./255,18./255,1] )):
+        for rec, color in zip(self.rects, ('#B4C7E7', '#2F5597')):# [0,176./255,80./255,1],[228./255,131./255,18./255,1] )):
             rec.set_color(color)
                  
         self.bottom1 = ax_bottom1
         self.bottom1.set_yticks([1,2])
         self.bottom1.set_yticklabels(["", ""])
         self.bottom1.set_xlabel("置信区间数", fontsize=40)
-        self.bottom1.text(-21, 1+0.18, r'$\mu$在', fontsize=30, va='center', ha='center', color=[0,176./255,80./255,1], )
-        self.bottom1.text(-21, 1-0.18, "置信区间内", fontsize=30, va='center', ha='center', color=[0,176./255,80./255,1], )
-        self.bottom1.text(-21, 2+0.18, r"$\mu$不在", fontsize=30, va='center', ha='center', color=[228./255,131./255,18./255,1], )
-        self.bottom1.text(-21, 2-0.18, "置信区间内", fontsize=30, va='center', ha='center', color=[228./255,131./255,18./255,1], )
+        self.bottom1.text(-21, 1+0.18, r'$\mu$在', fontsize=30, va='center', ha='center', color='k', )
+        self.bottom1.text(-21, 1-0.18, "置信区间内", fontsize=30, va='center', ha='center', color='k', )
+        self.bottom1.text(-21, 2+0.18, r"$\mu$不在", fontsize=30, va='center', ha='center', color='k', )
+        self.bottom1.text(-21, 2-0.18, "置信区间内", fontsize=30, va='center', ha='center', color='k', )
         # Set up plot parameters
         self.bottom1.set_ylim(0.4, 2.6)
         self.bottom1.set_xlim(0, 200)
@@ -113,11 +112,11 @@ class UpdateDist:
         self.bottom1.spines['right'].set_visible(False)
         
         #bottom plot2
-        self.line2,=ax_bottom2.plot([],[],linestyle='-',color='black',lw=5,zorder=0)
+        self.line2,=ax_bottom2.plot([],[],linestyle='-',color='black',lw=5,zorder=1)
         ax_bottom2.set_xlabel('置信区间数', fontsize=40)
         ax_bottom2.set_ylabel('在置信区间内\n的累计频率', fontsize=40)
         ax_bottom2.plot([0,200],[0.95,0.95],'--',color='red',lw=5,zorder=0)
-        ax_bottom2.text(200,0.93,r'$\alpha=0.95$',fontsize=40,color='b',zorder=1, ha='right', va='top')
+        ax_bottom2.text(200,0.93,r'$\alpha=0.95$',fontsize=40,color='r',zorder=0, ha='right', va='top')
         
         # now determine nice limits by hand:
         xlim1 = (-1, frequency.shape[0]+1)
@@ -128,7 +127,7 @@ class UpdateDist:
         self.ax_bottom2 = ax_bottom2
         
         #draw colorbar
-        self.cm = plt.cm.RdYlBu_r
+        self.cm = plt.cm.Blues
         gradient = np.atleast_2d(np.linspace(0, 1, 256))
         ax_colorbar.imshow(gradient, aspect='auto', cmap=self.cm, alpha=0.7)
         ax_colorbar.set_yticks([])
@@ -160,7 +159,7 @@ class UpdateDist:
             self.line2.set_data(index[:idx], frequency[:idx])
             
             # update scatter facecolor
-            self.color = self.cm(data_norm[idx])
+            self.color = self.cm(data_norm[idx-1])
             self.sc_car.set_facecolor(self.color)
             
         return self.rects
@@ -168,10 +167,10 @@ class UpdateDist:
     
 #%%
 fig = plt.figure(figsize=(30,12))
-spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.04, right=0.7, top=1.0, bottom=0.8, figure=fig)
+spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.04, right=0.72, top=1.0, bottom=0.8, figure=fig)
 ax0 = fig.add_subplot(spec1[0])
 ax0.axis('off')
-spec3 = gridspec.GridSpec(ncols=1, nrows=1, left=0.72, right=0.95, top=0.93, bottom=0.89, figure=fig)
+spec3 = gridspec.GridSpec(ncols=1, nrows=1, left=0.72, right=0.95, top=0.94, bottom=0.88, figure=fig)
 ax2 = fig.add_subplot(spec3[0]) 
 spec4 = gridspec.GridSpec(ncols=1, nrows=1, left=0.08, right=0.95, top=0.82, bottom=0.56, figure=fig)
 ax4=fig.add_subplot(spec4[0]) 

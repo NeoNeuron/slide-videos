@@ -110,7 +110,8 @@ conda env create -y -f requirements.yml
     - `lln.py`
 
 18. 区间估计
-    - `intervel_estimation.py`
+    - `intervel_estimation_var_known.py`
+    - `intervel_estimation_var_unknown.py`
 
 19. 正态总体的假设检验（选自第八章：假设检验）
     - `previous_topics/hypothesis_test.ipynb`
