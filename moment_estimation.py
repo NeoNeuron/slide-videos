@@ -1,7 +1,7 @@
 # %%
 from pathlib import Path
-PATH = Path('moment_estimation/')
-PATH.mkdir(exist_ok=True)
+path = Path('moment_estimation/')
+path.mkdir(exist_ok=True)
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -13,9 +13,9 @@ plt.rcParams["font.family"] = 'sans-serif'
 plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
 plt.rcParams['axes.unicode_minus']=False # correct minus sign
 
-plt.rcParams["font.size"] = 20
-plt.rcParams["xtick.labelsize"] = 40
-plt.rcParams["ytick.labelsize"] = 40
+plt.rcParams["font.size"] = 18
+plt.rcParams["xtick.labelsize"] = 35
+plt.rcParams["ytick.labelsize"] = 35
 def gen_marker(fname:str, rotation:float=180):
     """Generate maker from svg image file.
     Args:
@@ -43,17 +43,12 @@ ax.axis('off')
 #数据
 np.random.seed(1901)
 mean,std=600,10 #均值，标准差
-size=10000
-data1=np.random.normal(mean,std,int(size*1))
-#print(data1.shape,data1_new.shape)
-data1_norm=(data1-data1.min())/(data1.max()-data1.min())
+size=(200, 10)
+data=np.random.randn(*size)*std+mean
+data_norm=(data-data.min())/(data.max()-data.min())
 
-n = 10
-data=data1.reshape(-1,n)
-
-data_mean=np.mean(data,axis=1)
+data_mean=data.mean(1)
 data_sigma=np.mean(data**2, axis=1) - data_mean**2
-index=np.arange(1,1001,1)
 
 # %%
 from scipy.optimize import fsolve
@@ -105,14 +100,14 @@ class UpdateDist:
         
         # scatter plot:
         self.line_left, = ax[0].plot([], [], 'o',
-            color='b',
+            color='#2F5597',
             markersize=8,
             markerfacecolor='none',
             markeredgewidth=3)
         ax[0].plot([0,200],[100,100],ls='--',color='grey',lw=3, alpha=0.7)
         self.line1 =ax[0].plot([],[],ls='-',color='r',lw=3)[0] 
-        self.line11 =ax[0].plot([],[],ls='-',color='#1F77B4',lw=4)[0] 
-        self.line12 =ax[0].plot([],[],ls='-',color='#1F77B4',lw=4)[0] 
+        self.line11 =ax[0].plot([],[],ls='-',color='#B4C7E7',lw=4)[0] 
+        self.line12 =ax[0].plot([],[],ls='-',color='#B4C7E7',lw=4)[0] 
 
         # now determine nice limits by hand:
         ymax = np.max(np.fabs(data0))
@@ -129,14 +124,14 @@ class UpdateDist:
         
         # scatter plot:
         self.line_right, = ax[1].plot([], [], 'o',
-            color='b',
+            color='#2F5597',
             markersize=8,
             markerfacecolor='none',
             markeredgewidth=3)
         ax[1].plot([0,200],[100,100],ls='--',color='grey',lw=3, alpha=0.7)
         self.line2, =ax[1].plot([],[],ls='-',color='r',lw=3)
-        self.line21,=ax[1].plot([],[],ls='-', color='#1F77B4', lw=4)
-        self.line22,=ax[1].plot([],[],ls='-', color='#1F77B4',lw=4)
+        self.line21,=ax[1].plot([],[],ls='-', color='#B4C7E7', lw=4)
+        self.line22,=ax[1].plot([],[],ls='-', color='#B4C7E7',lw=4)
         
         ylim = (int(ymin1*0.99), int(ymax1*1.01))
         # now determine nice limits by hand:
@@ -152,7 +147,7 @@ class UpdateDist:
         ax_colorbar.imshow(gradient, aspect='auto', cmap=self.cm, alpha=0.7)
         ax_colorbar.set_yticks([])
         ax_colorbar.set_xticks([0, 255])
-        ax_colorbar.set_xticklabels(['低', '高'])
+        ax_colorbar.set_xticklabels(['560', '630'])
         for size in ax_colorbar.get_xticklabels(): 
             size.set_fontsize('50')
         ax_colorbar.set_title('里程数', fontsize=50)
@@ -162,55 +157,55 @@ class UpdateDist:
         # This way the plot can continuously run and we just keep
         # watching new realizations of the process
 
-        if i > 0:
-            n_inc = 1
+        if i > 0 and i <= self.data0.shape[0]:
             # update lines
-            idx = (i)*n_inc
-            self.line_left.set_data(index[:idx], self.data0[:idx])
-            self.line_right.set_data(index[:idx], self.data1[:idx])
-            self.line1.set_data(index[:idx],self.cummean[:idx])
-            self.line11.set_data(index[:idx],self.cummean[:idx]+self.sigma[:idx])
-            self.line12.set_data(index[:idx],self.cummean[:idx]-self.sigma[:idx]) 
+            idx = i
+            xdata = np.arange(idx)
+            self.line_left.set_data(xdata,  self.data0[:idx])
+            self.line_right.set_data(xdata, self.data1[:idx])
+            self.line1.set_data(xdata,  self.cummean[:idx])
+            self.line11.set_data(xdata, self.cummean[:idx]+self.sigma[:idx])
+            self.line12.set_data(xdata, self.cummean[:idx]-self.sigma[:idx]) 
             
             if (i>1):
                 self.shade1.remove()
                 self.shade2.remove()
             self.shade1 = self.ax[0].fill_between(
-                index[:idx],self.cummean[:idx]-self.sigma[:idx],
+                xdata,self.cummean[:idx]-self.sigma[:idx],
                 self.cummean[:idx]+self.sigma[:idx],
                 fc='#1F77B4', alpha=0.1)
-            self.line2.set_data(index[:idx],self.cummean2[:idx])
-            self.line21.set_data(index[:idx],self.cummean2[:idx]+self.sigma2[:idx])
-            self.line22.set_data(index[:idx],self.cummean2[:idx]-self.sigma2[:idx]) 
+            self.line2.set_data(xdata,self.cummean2[:idx])
+            self.line21.set_data(xdata,self.cummean2[:idx]+self.sigma2[:idx])
+            self.line22.set_data(xdata,self.cummean2[:idx]-self.sigma2[:idx]) 
             self.shade2 = self.ax[1].fill_between(
-                index[:idx],self.cummean2[:idx]-self.sigma2[:idx],
+                xdata,self.cummean2[:idx]-self.sigma2[:idx],
                 self.cummean2[:idx]+self.sigma2[:idx],
                 fc='#1F77B4', alpha=0.1)
             # update scatter facecolor
-            for j in range(10):
-                indx=10*i+j
-                self.color[j,:] = self.cm(data1_norm[indx])
+            self.color = self.cm(data_norm[idx-1])
             self.sc_car.set_facecolor(self.color)
             
         return [self.line_left,]
 
 # %%
-fig = plt.figure(figsize=(30,14))
-spec1 = plt.GridSpec(ncols=1, nrows=1, left=0.02, right=0.75, top=0.95, bottom=0.73, )
-ax0 = fig.add_subplot(spec1[0])
-ax0.axis('off')
-spec3 = plt.GridSpec(ncols=1, nrows=1, left=0.75, right=0.93, top=0.85, bottom=0.8, )
-ax2 = fig.add_subplot(spec3[0])
-gs = plt.GridSpec(ncols=2, nrows=1, left=0.10, right=0.96, top=0.65, bottom=0.1, wspace=0.3)
-ax = [fig.add_subplot(gsi) for gsi in gs]
-for axi in ax:
-    axi.set_xlabel('样本组编号', fontsize=50)
-    # axi.set_ylabel(r'$\hat{\mu}$', fontsize=80, ha='center', va='bottom')
-    axi.set_ylabel(r'$\widehat{\sigma^2}$', fontsize=80, ha='center', va='bottom')
-
-# ud = UpdateDist(ax0, ax, ax2, data_mean, data_mean2)
-ud = UpdateDist(ax0, ax, ax2, data_sigma, data_sigma2)
-anim = FuncAnimation(fig, ud, frames=216, blit=True)
-anim.save(PATH/'sigma.mp4', fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+def gen_movie(data_low, data_high, label, fname):
+    fig = plt.figure(figsize=(28,10))
+    spec1 = plt.GridSpec(ncols=1, nrows=1, left=0.10, right=0.72, top=0.98, bottom=0.73, )
+    ax0 = fig.add_subplot(spec1[0])
+    ax0.axis('off')
+    spec3 = plt.GridSpec(ncols=1, nrows=1, left=0.73, right=0.90, top=0.9, bottom=0.83, )
+    ax2 = fig.add_subplot(spec3[0])
+    gs = plt.GridSpec(ncols=2, nrows=1,
+                    left=0.10, right=0.96, top=0.68, bottom=0.12, wspace=0.8)
+    ax = [fig.add_subplot(gsi) for gsi in gs]
+    for axi in ax:
+        axi.set_xlabel('样本组编号', fontsize=50)
+        axi.set_ylabel(label, fontsize=60, ha='right', va='center', rotation=0, labelpad=20)
+    ud = UpdateDist(ax0, ax, ax2, data_low, data_high)
+    # plt.savefig(path/'test.pdf')
+    anim = FuncAnimation(fig, ud, frames=216, blit=True)
+    anim.save(path/fname, fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 
 # %%
+gen_movie(data_mean, data_mean2, r'$\hat{\mu}$', 'mean.mp4')
+gen_movie(data_sigma, data_sigma2, r'$\widehat{\sigma^2}$', 'sigma.mp4')

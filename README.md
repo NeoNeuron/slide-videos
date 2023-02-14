@@ -102,6 +102,7 @@ conda env create -y -f requirements.yml
 15. 矩估计
     - `multi_moment.py`
     - `moment_estimation.py`
+    - `evolve_moment.py`
 
 17. 点估计的评价标准
     - `point_estimation.py`
