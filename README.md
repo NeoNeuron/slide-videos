@@ -39,6 +39,7 @@ conda env create -y -f requirements.yml
 
 8. 随机变量的函数
     - `incubation.py`
+    - `incubation_anim.py`
     - `stock_price.py`
     - `3d_projection.py`
     - `height_histogram.py`
