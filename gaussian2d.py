@@ -81,16 +81,21 @@ class UpdateFigure:
         # draw 2d pcolor
         # ====================
         self.mesh = ax3.pcolormesh(self.xx, self.yy, xysurf, cmap=self.cm, lw=0)
-        ax3.axis('scaled')
-        ax3.yaxis.tick_right()
-        ax3.yaxis.set_label_position('right')
-        ax3.set_xticks(xticks,minor=True)
-        ax3.set_yticks(yticks,minor=True)
-        ax3.set_xticks([-3,0,3])
-        ax3.set_yticks([-3,0,3])
-        ax3.set_xlabel(r'$x$', fontsize=40, labelpad=0)
-        ax3.set_ylabel(r'$y$', fontsize=40, rotation=0, va='center', labelpad=10)
+        self.format2d(ax3, labelsize=40, ticksize=20)
         self.ax3 = ax3
+
+    @staticmethod
+    def format2d(ax, labelsize, ticksize):
+        ticks=np.linspace(-4,4,9,dtype=int)
+        ax.axis('scaled')
+        ax.yaxis.tick_right()
+        ax.yaxis.set_label_position('right')
+        for axis in [ax.xaxis, ax.yaxis]:
+            axis.set_ticks(ticks, minor=True)
+            axis.set_ticks([-3,0,3])
+            axis.set_ticklabels([-3,0,3], fontsize=ticksize)
+        ax.set_xlabel(r'$x$', fontsize=labelsize, labelpad=0)
+        ax.set_ylabel(r'$y$', fontsize=labelsize, rotation=0, va='center', labelpad=10)
     
     def set_target(self, trans_type, diff, nframe):
         self.trans_type = trans_type
