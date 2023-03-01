@@ -62,12 +62,14 @@ class UpdateFigure:
             facecolor=self.colors['green'], edgecolor='None', alpha=0.7, zorder=1) # Add a polygon instead of fill_between
         ax2.add_collection3d(self.shade2)
 
-        ax2.set_xlabel(r'$x$', fontsize=30, labelpad=15)
-        ax2.set_ylabel(r'$y$', fontsize=30, labelpad=15)
+        ax2.set_xlabel(r'$x$(CPU负载)', fontsize=20, labelpad=15)
+        ax2.set_ylabel(r'$y$(内存占用)', fontsize=20, labelpad=15)
         ax2.tick_params(axis='x', which='major', pad=-2)
         ax2.tick_params(axis='y', which='major', pad=-2)
         ax2.tick_params(axis='z', which='major', pad=10)
-        ax2.zaxis.set_rotate_label(False)
+        ax2.xaxis.set_rotate_label(True)
+        ax2.yaxis.set_rotate_label(True)
+        # ax2.zaxis.set_rotate_label(False)
         # ax2.set_zlabel(r'$f(y)$', rotation=0, fontsize=20)
         xticks=[-4,-2,0,2,4]
         yticks=[-4,-2,0,2,4]
@@ -92,7 +94,7 @@ class UpdateFigure:
         p_cond = np.array(verts1[:-2])
         self.line, = ax3.plot(p_cond[:,0], p_cond[:,2], lw=5, color=self.colors['blue'])
         self.shade_2d = ax3.fill_between(p_cond[:,0],0, p_cond[:,2], color=self.colors['red'], alpha=0.8)
-        ax3.set_xlabel(r'$x$', fontsize=30)
+        ax3.set_xlabel(r'$x$(CPU负载)', fontsize=20)
         ax3.text(-0.225,0.5,r'$f(x|\quad\qquad\qquad)$', fontsize=25,
             ha='center', va='center', rotation=90, color='k', transform=ax3.transAxes)
         ax3.set_ylabel(r'$y=%.2f$'%self.y0, color='red', fontsize=22, y=0.59)
@@ -116,9 +118,12 @@ class UpdateFigure:
 
     @staticmethod
     def gen_text(_mean, _cov):
-        return r"$\boldsymbol{\mu}=\begin{bmatrix}%.1f\\%.1f\end{bmatrix},\boldsymbol{\Sigma}=\begin{bmatrix}%.1f & %.1f \\ %.1f & %.1f\end{bmatrix}$"%(*_mean, *_cov.flatten())
+        return r"$\begin{matrix}\mu_1=%.1f\\\mu_2=%.1f\end{matrix}\quad\begin{matrix}\sigma_1=%.1f \\ \sigma_2=%.1f\end{matrix}\quad\rho=%.1f$"%(
+                    *_mean, _cov[0,0], _cov[1,1], _cov[0,1]/np.sqrt(_cov[0,0]*_cov[1,1]))
 
     def __call__(self, i):
+        if i==0:
+            i = 90
         mean_ = self.mean
         cov_ = self.cov.copy()
         y_ = self.y0 + i/30

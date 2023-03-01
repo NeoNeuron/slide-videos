@@ -31,17 +31,17 @@ class UpdateFigure:
         # ====================
         # config data
         # ====================
-        self.mean = np.array([0.9/2,1.1/2])#np.zeros(2)
-        self.cov = 0.25*np.eye(2)
-        self.cov[1,0] = self.cov[0,1] = 0.25*0.95
-        self.cov = self.cov/8
+        self.mean = np.array([0.45,0.55])
+        self.cov = np.array([[1, 0.95], [0.95, 1]])/32.
         #self.xx, self.yy = np.meshgrid(np.linspace(0,2,101), np.linspace(0,2,101))
         #xysurf = mn.pdf(np.dstack((self.xx,self.yy)), self.mean, self.cov)
         #self.vmin, self.vmax = 0, np.max(xysurf)
         np.random.seed(1)
         self.xx = np.random.multivariate_normal(self.mean, self.cov, (10000,))
+        self.xx[12,:] = [0.38, 0.68]
 
-        self.scatter_main = ax1.scatter([], [],alpha=0.7, c=self.colors['red'],s=4,marker='x')
+        self.scatter_main, = ax1.plot([], [],'o', alpha=0.5,ms=5,
+                                    mec='#353A71', mfc='#A7BED2')
         self.ax1 = ax1
         ax1.axis('scaled')
         ax1.set_xlim([0,1])
@@ -50,9 +50,8 @@ class UpdateFigure:
         yticks=[i*0.2 for i in range(6)]
         ax1.set_xticks(xticks)
         ax1.set_yticks(yticks)
-        ax1.set_xlabel(r'$x_1$(CPU负载)',fontsize=18)
-        ax1.set_ylabel(r'$x_2$(内存占用)',fontsize=18)
-
+        ax1.set_xlabel(r'$x$(CPU负载)',fontsize=18)
+        ax1.set_ylabel(r'$y$(内存占用)',fontsize=18)
 
         self.n = n = 11
         _xx, _yy = np.meshgrid(np.linspace(0,1,n), np.linspace(0,1,n))
@@ -77,10 +76,10 @@ class UpdateFigure:
         ax2.xaxis.pane.set_edgecolor('w')
         ax2.yaxis.pane.set_edgecolor('w')
         ax2.zaxis.pane.set_edgecolor('w')
-        ax2.xaxis.set_rotate_label(False)
-        ax2.yaxis.set_rotate_label(False)
-        ax2.set_xlabel(r'$x_1$', fontsize=18, rotation=0)
-        ax2.set_ylabel(r'$x_2$', fontsize=18, rotation=0)
+        # ax2.xaxis.set_rotate_label(False)
+        # ax2.yaxis.set_rotate_label(False)
+        ax2.set_xlabel(r'$x$(CPU负载)', fontsize=14)#, rotation=0)
+        ax2.set_ylabel(r'$y$(内存占用)', fontsize=14)#, rotation=0)
         ax2.tick_params(axis='x', which='major', pad=0)
         ax2.tick_params(axis='y', which='major', pad=0)
         self.ax2 = ax2
@@ -104,16 +103,7 @@ class UpdateFigure:
         #print(top)
         return top
 
-
-
-    @staticmethod
-    def _gauss(mean, sigma, x):
-        return np.exp(-(x-mean)**2/(2*sigma**2))/2/np.pi/sigma
-
-
     def __call__(self, i):
-        # print(i)
-
         if (i>0 and i<=200):
 
             if i==0:
@@ -124,8 +114,7 @@ class UpdateFigure:
                 self.ax1.axhline(1.4, xmax=0.3, ls='--', color=self.colors['green'])
 
 
-            self.scatter_main.remove()
-            self.scatter_main = self.ax1.scatter(self.xx[:i,0], self.xx[:i,1], alpha=1, c=self.colors['red'],s=50,marker='x',zorder=1)
+            self.scatter_main.set_data(self.xx[:i,0], self.xx[:i,1])
 
             if i==200:
                 print('surface_output')
@@ -173,5 +162,5 @@ fig.savefig(path/'test_cpu_ram_2.pdf')
 anim = FuncAnimation(fig, ud, frames=nframes+1, blit=True)
 # save animation as *.mp4
 anim.save(path/'cpu2-addmesh-2.mp4', fps=40, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
-fig.savefig(path/'cpu2-addmesh-2_finalshot.pdf')
+fig.savefig(path/'cpu2-addmesh-2_finalshot.png', dpi=300)
 # %%

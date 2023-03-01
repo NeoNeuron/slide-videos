@@ -68,15 +68,16 @@ ax1 = fig.add_subplot(spec1[0], projection='3d')
 surf = ax1.plot_surface(xx, yy, xysurf, cmap=cm, alpha=0.4,
                 rstride=1, cstride=1, zorder=0, vmin=vmin, vmax=vmax)
 # ax1.view_init(10, None)
-ax1.set_xlabel(r'$x$', fontsize=30, labelpad=10)
-ax1.set_ylabel(r'$y$', fontsize=30, labelpad=10)
+ax1.set_xlabel(r'$x$(CPU负载)', fontsize=20, labelpad=10)
+ax1.set_ylabel(r'$y$(内存占用)', fontsize=20, labelpad=10)
 ax1.tick_params(axis='x', which='major', pad=2)
 ax1.tick_params(axis='y', which='major', pad=2)
 ax1.tick_params(axis='z', which='major', pad=4)
 ax1.tick_params(axis='x', labelsize=14)
 ax1.tick_params(axis='y', labelsize=14)
 ax1.tick_params(axis='z', labelsize=14)
-ax1.zaxis.set_rotate_label(False)
+ax1.xaxis.set_rotate_label(True)
+ax1.yaxis.set_rotate_label(True)
 # ax1.set_zlabel(r'$f(y)$', rotation=0, fontsize=20)
 xticks=[0,0.5,1]
 yticks=[0,0.5,1]
@@ -109,7 +110,7 @@ ax2 = fig.add_subplot(spec2[0])
 p_cond = np.array(verts1[:-2])
 line, = ax2.plot(p_cond[:,0], p_cond[:,2], lw=5, color=colors['blue'])
 shade_2d = ax2.fill_between(p_cond[:,0],0, p_cond[:,2], color=colors['red'], alpha=0.8)
-ax2.set_xlabel(r'$x$', fontsize=30)
+ax2.set_xlabel(r'$x$(CPU负载)', fontsize=20)
 ax2.text(-0.155,0.5,r'$f(x|\qquad\qquad)$', fontsize=25,
     ha='center', va='center', rotation=90, color='k', transform=ax2.transAxes)
 ax2.set_ylabel(r'$y=%.2f$'%y0, color='red', fontsize=24, y=0.59)
@@ -130,3 +131,4 @@ ax2.scatter([0.3],[0],s=200, marker='x', lw=4, c='#92D050',zorder=10).set_clip_o
 ax2.axvline(0.3, ls='--', lw=3, c='#92D050')
 print(mn.pdf((0.3,0.7), mean, cov))
 snapshot()
+# %%
