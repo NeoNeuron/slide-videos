@@ -7,6 +7,7 @@ import numpy as np
 from matplotlib.animation import FuncAnimation
 import matplotlib.gridspec as gridspec
 from scipy.stats import multivariate_normal as mn
+from scipy.stats import norm
 # %%
 plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'
@@ -53,6 +54,7 @@ class scatter2hist(scatter_anim):
         ax2.set_xlim(0,1)
         ax1.set_xlim(0,55)
         ax2.set_ylim(0,55)
+        self.ax1, self.ax2 = ax1, ax2
     
     def __call__(self, i):
         dx = dy = 0.05
@@ -70,6 +72,10 @@ class scatter2hist(scatter_anim):
             counts = self.hist(self.data[new_y>1, 0])
             for bar, count in zip(self.bar2, counts):
                 bar.set_height(count)
+        elif i ==int(1/dx)*2+1:
+            x_grid = y_grid = np.linspace(*self.range,100)
+            self.ax1.plot(norm.pdf(y_grid, loc=0.55, scale=np.sqrt(1/32))*400/self.bins, y_grid, 'k')
+            self.ax2.plot(x_grid, norm.pdf(x_grid, loc=0.45, scale=np.sqrt(1/32))*400/self.bins, 'k')
         return self.bar1
             
     def hist(self, x):
