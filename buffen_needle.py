@@ -1,4 +1,7 @@
 # %%
+from pathlib import Path
+path = Path('./geometric_probability/')
+path.mkdir(exist_ok=True)
 import numpy as np
 import matplotlib.pyplot as plt
 plt.rcParams['axes.spines.top']=False
@@ -25,7 +28,9 @@ class UpdateFigure_geo_prob:
         self.last_sample = None
         self.current_sample = None
         self.hit = 0
-        ax.set_title(f'{self.hit:5d}/{N:5d}' + r'$\,\,\,\,\,\,\,\pi$=%10.6f'%(0), fontsize=20, usetex=True)
+        ax.set_title(
+            f'{self.hit:5d}/{N:5d}' + r'$\,\,\,\,\,\,\,\pi$=%10.6f'%(0), 
+            fontsize=20, usetex=True)
 
         ax_right.set_xlim(0, data.shape[0]+1)
         ax_right.axhline(np.pi, color='r', ls='--')
@@ -44,17 +49,24 @@ class UpdateFigure_geo_prob:
         # watching new realizations of the process
 
         nb = 50
-        if i > 0 and i<=self.data.shape[0]/nb:
+        if i >=0 and i<self.data.shape[0]/nb:
             if self.last_sample is not None:
                 [line.set_alpha(0.05) for line in self.last_sample]
-            ii = nb*(i-1)
+            ii = nb*i
             mask = np.floor(self.data[ii:ii+nb,2]) == np.floor(self.data[ii:ii+nb,3])
             # update lines
-            self.current_sample = self.ax.plot(self.data[ii:ii+nb,0:2].T, self.data[ii:ii+nb,2:4].T, color=RED)
-            self.current_sample.extend(self.ax.plot(self.data[ii:ii+nb,0:2][~mask,:].T, self.data[ii:ii+nb,2:4][~mask,:].T, color=GREEN))
-            self.hit += (~mask).sum()
+            self.current_sample = self.ax.plot(
+                self.data[ii:ii+nb,0:2].T, self.data[ii:ii+nb,2:4].T, color=RED)
+            self.current_sample.extend(
+                self.ax.plot(self.data[ii:ii+nb,0:2][~mask,:].T, self.data[ii:ii+nb,2:4][~mask,:].T, color=GREEN))
+            if i == 0:
+                self.hit = (~mask).sum()
+            else:
+                self.hit += (~mask).sum()
             
-            self.ax.set_title(f'{self.hit:5d}/{i*nb:5d}' + r'$\,\,\,\,\,\,\,\pi$=%10.6f'%(2*self.l*i*nb/self.hit), fontsize=20, usetex=True)
+            self.ax.set_title(
+                f'{self.hit:5d}/{(i+1)*nb:5d}' + r'$\,\,\,\,\,\,\,\pi$=%10.6f'%(2*self.l*(i+1)*nb/self.hit),
+                fontsize=20, usetex=True)
             # update last sample
             self.last_sample = self.current_sample
             self.pi_line.set_data(self.trials[:ii+nb], self.pi_est[:ii+nb])
@@ -92,11 +104,11 @@ dy = np.cos(x[:,2])*l/2
 data = np.vstack((x[:,0]+dx, x[:,0]-dx, x[:,1]+dy, x[:,1]-dy)).T
 
 ud = UpdateFigure_geo_prob(data, l, ax0, ax1)
-fig.savefig('test.pdf')
+fig.savefig(path/'test.pdf')
 #%%
 # user FuncAnimation to generate frames of animation
 anim = FuncAnimation(fig, ud, frames=90, blit=True)
 # save animation as *.mp4
-anim.save('buffen_needle.mp4', fps=6, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'buffen_needle.mp4', fps=6, dpi=300, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 
 # %%
