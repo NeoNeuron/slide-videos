@@ -81,7 +81,7 @@ class UpdateFigure_scatter_hist:
             self.rects[idx].set_width(self.rects[idx].get_width()+1)
             self.rects[idx].set_alpha(1)
             self.last_bin = idx
-        elif i > self.data.shape[0]+1:
+        elif i == self.data.shape[0]+1:
             for rect in self.rects:
                 rect.set_alpha(1)
             self.ax_main.axhline(self.data.mean(), color='b',ls='--')
@@ -108,6 +108,7 @@ ax[1].yaxis.set_major_formatter(NullFormatter())
 # create a figure updater
 ud = UpdateFigure_scatter_hist(rv, ax[0], ax[1],(6.6, 7.6))
 # user FuncAnimation to generate frames of animation
-anim = FuncAnimation(fig, ud, frames=30, blit=True)
+anim = FuncAnimation(fig, ud, frames=36, blit=True)
 # save animation as *.mp4
-anim.save('hypothesis_sampling.mp4', fps=6, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save('hypothesis_sampling.mp4', fps=6, dpi=300, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+# %%
