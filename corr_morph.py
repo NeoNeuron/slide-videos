@@ -10,6 +10,8 @@ from scipy.stats import multivariate_normal as mn
 from scipy.stats import norm
 plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'
+plt.rcParams['xtick.labelsize'] = 16
+plt.rcParams['ytick.labelsize'] = 16
 # %%
 
 class UpdateFigure:
@@ -37,6 +39,8 @@ class UpdateFigure:
         self.axes_ylim_toggle = [False, False]
         self.axes_ylim_target = [None, None]
         self.axes_ylim_step = [None, None]
+        self.lines = []
+        self.shades = []
         for mean, std, ax, label in zip(means, stds, self.axes, ('X','Y') ):
             line, = ax.plot(self.xgrid, norm.pdf(self.xgrid, mean, std), color='k', lw=2)
             line.set_clip_on(False)
@@ -53,10 +57,10 @@ class UpdateFigure:
                                  mec='k', mfc='#1F77B4', mew=0.5, alpha=1)
         ax3.set_xlim(xrange)
         ax3.set_ylim(yrange)
+        ax3.set_xticks(np.arange(xrange[0], xrange[1]+1, 4))
+        ax3.set_yticks(np.arange(yrange[0], yrange[1]+1, 4))
         ax3.set_xlabel(r'$X$',fontsize=18)
         ax3.set_ylabel(r'$Y$',fontsize=18)
-        self.lines = []
-        self.shades = []
         self.ax3 = ax3
 
         self.rho = rho
@@ -67,6 +71,8 @@ class UpdateFigure:
         self.surf = ax4.pcolormesh(self.xx, self.yy, xysurf, cmap='turbo')
         ax4.set_xlabel(r'$X$',fontsize=18)
         ax4.set_ylabel(r'$Y$',fontsize=18)
+        ax4.set_xticks(np.arange(xrange[0], xrange[1]+1, 4))
+        ax4.set_yticks(np.arange(yrange[0], yrange[1]+1, 4))
         self.ax4 = ax4
 
 
@@ -132,18 +138,6 @@ class UpdateFigure:
 
         return [self.scatter]
 
-fig = plt.figure(figsize=(12,4))
-spec = gridspec.GridSpec(2, 3, 
-    left=0.08, right=0.98, top=0.95, bottom=0.15,
-    hspace=0.5,
-    wspace=0.2,
-    figure=fig)
-#fig.set_tight_layout(True)
-ax1 = fig.add_subplot(spec[0,0], )
-ax2 = fig.add_subplot(spec[1,0], )
-ax3 = fig.add_subplot(spec[0:2,1])
-ax4 = fig.add_subplot(spec[0:2,2])
-# create a figure updater
 nframes=144
 
 BLUE = '#000089'
@@ -159,6 +153,16 @@ means = [2, 2]
 stds  = [2, 0.1]
 
 for mode in range(2):
+    fig = plt.figure(figsize=(12,4))
+    spec = gridspec.GridSpec(2, 3, 
+        left=0.08, right=0.98, top=0.95, bottom=0.15,
+        hspace=0.5,
+        wspace=0.2,
+        figure=fig)
+    ax1 = fig.add_subplot(spec[0,0], )
+    ax2 = fig.add_subplot(spec[1,0], )
+    ax3 = fig.add_subplot(spec[0:2,1])
+    ax4 = fig.add_subplot(spec[0:2,2])
     ud = UpdateFigure(ax1, ax2, ax3, ax4, nframes, X, Y, rho, means, stds, xrange, yrange, mode)
     # user FuncAnimation to generate frames of animation
     anim = FuncAnimation(fig, ud, frames=nframes+25, blit=True)
