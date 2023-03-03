@@ -58,10 +58,10 @@ class UpdateFigure_geo_prob:
                 self.last_sample.set_alpha(0.5)
             # update lines
             if self.data[i-1] < 0.5:
-                self.current_sample = self.ax.axvline(self.data[i-1], color=RED, lw=0.2)
+                self.current_sample = self.ax.axvline(self.data[i-1], color=RED, lw=0.8)
                 self.hit += 1
             else:
-                self.current_sample = self.ax.axvline(self.data[i-1], color=GREEN, lw=0.2)
+                self.current_sample = self.ax.axvline(self.data[i-1], color=GREEN, lw=0.8)
 
             self.ax.set_title(f"{self.hit:3d} / {i:3d}", fontsize=20, pad=10)
             # update last sample
@@ -82,15 +82,13 @@ ax.set_yticks([])
 ax.set_xticks(np.arange(6))
 ax.set_xticklabels(ax.get_xticks(), fontsize=20)
 ax.set_xlabel('乘客到站时间(分钟)', fontsize=25)
-plt.savefig(path/'test.pdf')
-# %%
-np.random.seed(2022083014)
+np.random.seed(5)
 x = np.random.rand(500)*5
 # create a figure updater
 ud = UpdateFigure_geo_prob(x, ax)
 # user FuncAnimation to generate frames of animation
 anim = FuncAnimation(fig, ud, frames=576, blit=True)
 # save animation as *.mp4
-anim.save(path/'geo_prob_1d.mp4', fps=96, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
-fig.savefig(path/'geo_prob_1d_finalshot.pdf')
+anim.save(path/'geo_prob_1d.mp4', fps=96, dpi=300, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+fig.savefig(path/'geo_prob_1d_finalshot.png', dpi=300)
 # %%
