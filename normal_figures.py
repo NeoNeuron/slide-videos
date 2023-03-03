@@ -33,7 +33,7 @@ rv_y_ok = norm.rvs(loc=mu[0], scale=sigma[0], size=1000, random_state=11)
 rv_y_nok = norm.rvs(loc=mu[1], scale=sigma[1], size=1000, random_state=0)
 y_ok = norm.pdf(x, loc=mu[0], scale=sigma[0])
 y_nok = norm.pdf(x, loc=mu[1], scale=sigma[1])
-
+#%%
 # draw histogram of 2 normal distribution in 3 stages
 ax = create_fig()
 ax.hist(rv_y_ok,  range=(0,4500), bins=100, density=True, alpha=0.75, color=GREEN)
@@ -88,7 +88,7 @@ plt.savefig(path/'normal_pdf_s4.png', dpi=300)
 # draw PDFs, as well as FN area based on specific thresholds
 ax = create_fig()
 ax.plot(x, y_ok,  c=GREEN, zorder=10, lw=2)
-ax.plot(x, y_nok, c=RED  , zorder=10, lw=2)
+# ax.plot(x, y_nok, c=RED  , zorder=10, lw=2)
 th_val = mu[0]+sigma[0]
 print(th_val)
 ax.axvline(th_val, zorder=10, lw=3, color='orange')
