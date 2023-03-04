@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import norm
 plt.rcParams["axes.spines.top"] = False
 plt.rcParams["axes.spines.right"] = False
+plt.rcParams["xtick.labelsize"] = 16
+plt.rcParams["ytick.labelsize"] = 16
 #%%
 x = np.linspace(-3,3,1001)
 y = norm.pdf(x, loc=1.51, scale=0.4)
@@ -24,6 +26,20 @@ plt.xlim(-0.5, 14.5)
 plt.ylim(0,0.23)
 plt.tight_layout()
 plt.savefig(path/'incubation.pdf')
+#%%
+x = np.linspace(0,14,1001)
+y = norm.pdf(x, loc=1.51, scale=0.4)
+x_linear = np.exp(x)
+plt.figure(figsize=(6,3))
+plt.bar(np.arange(15), y_discrete, align='center', width=0.8)
+plt.plot(x_linear-0.5, y/5, c='orange', lw=3)
+plt.ylabel('频率', fontsize=20)
+plt.xlabel('天数', fontsize=20)
+plt.xlim(-0.5, 14.5)
+plt.ylim(0,0.23)
+plt.xticks(np.arange(0,15,2), labels=['0','','4','','8','','12',''])
+plt.tight_layout()
+plt.savefig(path/'incubation_fit.pdf')
 #%%
 counter = 1
 
