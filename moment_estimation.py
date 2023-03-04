@@ -81,7 +81,7 @@ data_sigma2 /= 10
 
 # %%
 class UpdateDist:
-    def __init__(self, ax_scatter, ax, ax_colorbar, data0, data1):
+    def __init__(self, ax_scatter, ax, ax_colorbar, data0, data1, gt, data_ylim):
         self.cummean = np.cumsum(data0)/np.arange(1, data0.shape[0]+1)
         self.sigma = np.sqrt(np.cumsum(data0**2)/np.arange(1, data0.shape[0]+1) - self.cummean**2)
         self.cummean2 = np.cumsum(data1)/np.arange(1, data1.shape[0]+1)
@@ -104,22 +104,19 @@ class UpdateDist:
             markersize=8,
             markerfacecolor='none',
             markeredgewidth=3)
-        ax[0].plot([0,200],[100,100],ls='--',color='grey',lw=3, alpha=0.7)
+        ax[0].axhline(gt,ls='--',color='grey',lw=3, alpha=0.7)
         self.line1 =ax[0].plot([],[],ls='-',color='r',lw=3)[0] 
         self.line11 =ax[0].plot([],[],ls='-',color='#B4C7E7',lw=4)[0] 
         self.line12 =ax[0].plot([],[],ls='-',color='#B4C7E7',lw=4)[0] 
 
         # now determine nice limits by hand:
-        ymax = np.max(np.fabs(data0))
-        ymin = np.min(np.fabs(data0))
-        ymax1 = np.max(np.fabs(data1))
-        ymin1 = np.min(np.fabs(data1))
         xlim = (0, 200)
-        ylim = (int(ymin*0.99), int(ymax*1.01))
-        # ylim = (620, 670)
         ax[0].set_title('低阶矩估计',fontsize=50)
         ax[0].set_xlim(xlim)
-        ax[0].set_ylim(ylim)
+        if isinstance(data_ylim[0], tuple):
+            ax[0].set_ylim(data_ylim[0])
+        else:
+            ax[0].set_ylim(data_ylim)
         self.ax = ax 
         
         # scatter plot:
@@ -128,17 +125,19 @@ class UpdateDist:
             markersize=8,
             markerfacecolor='none',
             markeredgewidth=3)
-        ax[1].plot([0,200],[100,100],ls='--',color='grey',lw=3, alpha=0.7)
+        ax[1].axhline(gt,ls='--',color='grey',lw=3, alpha=0.7)
         self.line2, =ax[1].plot([],[],ls='-',color='r',lw=3)
         self.line21,=ax[1].plot([],[],ls='-', color='#B4C7E7', lw=4)
         self.line22,=ax[1].plot([],[],ls='-', color='#B4C7E7',lw=4)
         
-        ylim = (int(ymin1*0.99), int(ymax1*1.01))
         # now determine nice limits by hand:
         ax[1].set_title('高阶矩估计',fontsize=50)
         ax[1].set_xlim(xlim)
-        ax[1].set_ylim(ylim)
-        ax[1].ticklabel_format(style='sci', scilimits=(0,0), axis='y', useMathText=True)
+        if isinstance(data_ylim[0], tuple):
+            ax[1].set_ylim(data_ylim[1])
+        else:
+            ax[1].set_ylim(data_ylim)
+        # ax[1].ticklabel_format(style='sci', scilimits=(0,0), axis='y', useMathText=True)
         
         
         #draw colorbar
@@ -188,7 +187,7 @@ class UpdateDist:
         return [self.line_left,]
 
 # %%
-def gen_movie(data_low, data_high, label, fname):
+def gen_movie(data_low, data_high, label, fname, **kwargs):
     fig = plt.figure(figsize=(28,10))
     spec1 = plt.GridSpec(ncols=1, nrows=1, left=0.10, right=0.72, top=0.98, bottom=0.73, )
     ax0 = fig.add_subplot(spec1[0])
@@ -196,16 +195,17 @@ def gen_movie(data_low, data_high, label, fname):
     spec3 = plt.GridSpec(ncols=1, nrows=1, left=0.73, right=0.90, top=0.9, bottom=0.83, )
     ax2 = fig.add_subplot(spec3[0])
     gs = plt.GridSpec(ncols=2, nrows=1,
-                    left=0.10, right=0.96, top=0.68, bottom=0.12, wspace=0.8)
+                      left=0.10, right=0.96, top=0.68, bottom=0.12, wspace=0.8)
     ax = [fig.add_subplot(gsi) for gsi in gs]
     for axi in ax:
         axi.set_xlabel('样本组编号', fontsize=50)
         axi.set_ylabel(label, fontsize=60, ha='right', va='center', rotation=0, labelpad=20)
-    ud = UpdateDist(ax0, ax, ax2, data_low, data_high)
+    ud = UpdateDist(ax0, ax, ax2, data_low, data_high, **kwargs)
     # plt.savefig(path/'test.pdf')
     anim = FuncAnimation(fig, ud, frames=216, blit=True)
     anim.save(path/fname, fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 
 # %%
-gen_movie(data_mean, data_mean2, r'$\hat{\mu}$', 'mean.mp4')
-gen_movie(data_sigma, data_sigma2, r'$\widehat{\sigma^2}$', 'sigma.mp4')
+gen_movie(data_mean, data_mean2, r'$\hat{\mu}$', 'mean.mp4', data_ylim=(560,630), gt=600)
+gen_movie(data_sigma, data_sigma2, r'$\widehat{\sigma^2}$', 'sigma.mp4', data_ylim=(0,2100), gt=100)
+# %%
