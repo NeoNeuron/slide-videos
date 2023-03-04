@@ -57,22 +57,22 @@ class scatter2hist(scatter_anim):
         self.ax1, self.ax2 = ax1, ax2
     
     def __call__(self, i):
-        dx = dy = 0.05
+        dx = dy = 1./24
         # bias = 0.01
         # speed = dx*2*(1-self.data[:,1]) + bias
-        if i > 0 and i < 1/dx:
+        if i > 0 and i <= int(1/dx)+12:
             new_x = self.data[:,0]+dx*i
             self.scatter_main.set_data(new_x, self.data[:,1])
             counts = self.hist(self.data[new_x>1, 1])
             for bar, count in zip(self.bar1, counts):
                 bar.set_width(count)
-        elif i >= int(1/dx) and i <=int(1/dx)*2:
-            new_y = self.data[:,1]+dy*(i-int(1/dx))
+        elif i > int(1/dx)+12 and i <=int(1/dx)*2+12:
+            new_y = self.data[:,1]+dy*(i-int(1/dx)-12-1)
             self.scatter_main.set_data(self.data[:,0], new_y)
             counts = self.hist(self.data[new_y>1, 0])
             for bar, count in zip(self.bar2, counts):
                 bar.set_height(count)
-        elif i ==int(1/dx)*2+1:
+        elif i ==int(1/dx)*2+18:
             x_grid = y_grid = np.linspace(*self.range,100)
             self.ax1.plot(norm.pdf(y_grid, loc=0.55, scale=np.sqrt(1/32))*400/self.bins, y_grid, 'k')
             self.ax2.plot(x_grid, norm.pdf(x_grid, loc=0.45, scale=np.sqrt(1/32))*400/self.bins, 'k')
@@ -125,9 +125,9 @@ ud = scatter_anim(ax, data)
 anim = FuncAnimation(fig, ud, frames=nframes+1, blit=True)
 # save animation as *.mp4
 anim.save(path/'cpu_ram_scatter.mp4', fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
-fig.savefig(path/'cpu_ram_scatter_finalshot.pdf')
+fig.savefig(path/'cpu_ram_scatter_finalshot.png', dpi=300)
 # %%
-nframes=60
+nframes=72
 gap = 0.015
 left, bottom, height, width = 0.12, 0.10, 0.6, 0.6
 fig, ax = plt.subplots(1, 1, figsize=(6,6), gridspec_kw=dict(
@@ -154,9 +154,13 @@ ax2.set_xticklabels([])
 # create a figure updater
 data[12,:] = [0.38, 0.68]
 ud = scatter2hist(ax, ax1, ax2, data[:400])
-fig.savefig(path/'cpu_ram_scatter2hist_finalshot.pdf')
 # user FuncAnimation to generate frames of animation
-anim = FuncAnimation(fig, ud, frames=nframes+1, blit=True)
+anim = FuncAnimation(fig, ud, frames=np.arange(0,36), blit=True)
 # save animation as *.mp4
-anim.save(path/'cpu_ram_scatter2hist.mp4', fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'cpu_ram_scatter2hist_p1.mp4', fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+
+anim = FuncAnimation(fig, ud, frames=np.arange(36,nframes+1), blit=True)
+# save animation as *.mp4
+anim.save(path/'cpu_ram_scatter2hist_p2.mp4', fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+fig.savefig(path/'cpu_ram_scatter2hist_finalshot.pdf')
 # %%
