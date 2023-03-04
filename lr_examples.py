@@ -62,7 +62,7 @@ x = np.random.randn(10)*20+100
 y=5*(x + np.random.randn(x.shape[0])*6)
 fig, ax = create_canvas()
 ax.plot(x, y, 'o', ms=15, markerfacecolor='royalblue', markeredgecolor='orange')
-ax.set_xlabel('住房面积($m^2$)', fontsize=30)
+ax.set_xlabel('住房面积($\mathrm{m}^2$)', fontsize=30)
 ax.set_ylabel('房价(万)', fontsize=30)
 ax.set_ylim(230, 680)
 fig.savefig(PATH/'house_price1.png', dpi=200)

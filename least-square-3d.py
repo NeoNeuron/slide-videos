@@ -97,33 +97,6 @@ spec = plt.GridSpec(1, 1,
     left=-0.1, right=1.1, top=1, bottom=-0.10,
     figure=fig)
 ax = fig.add_subplot(spec[0], projection='3d')
-ax.plot_surface(xx, yy, zz, rstride=1, cstride=1, alpha=0.3, color='darkgreen', ec='darkgreen',
-                lw=0, antialiased=False, shade=False, zorder=0)
-b = np.array([6.423,-4.157,8.713], dtype=float)
-ax.plot(0,0,0, 'o', zorder=11, color='navy', ms=3)
-a = Arrow3D([0,b[0]],[0,b[1]],[0,b[2]],
-            mutation_scale=10, zorder=10,
-            lw=2, arrowstyle="->", color="orange")
-ax.add_artist(a)
-
-b_parallel = b-(plane_vec*b).sum()*plane_vec
-a = Arrow3D([0,b_parallel[0]],[0,b_parallel[1]],[0,b_parallel[2]],
-            mutation_scale=10, zorder=10, shrinkA=0,
-            lw=2, arrowstyle="->", color="darkgreen")
-ax.add_artist(a)
-ax.set_box_aspect(aspect = (1,1,0.5))
-ratio=1
-line=Arrow3D(
-        [b[0]*ratio,b_parallel[0]*ratio],
-        [b[1]*ratio,b_parallel[1]*ratio],
-        [b[2]*ratio,b_parallel[2]*ratio], 
-        mutation_scale=10,
-        zorder=10, shrinkB=0, lw=2, arrowstyle="<-", color='r')
-ax.add_artist(line)
-
-length = np.sqrt(np.sum((b_parallel-b)**2))
-ax.set_title(f'长度={length:.3f}', color='#8D0000', y=0.93)
-
 # config figure view
 ax.view_init(20, 70)
 ax.set_xlim(-15,15)
@@ -131,8 +104,8 @@ ax.set_ylim(-15,15)
 ax.set_zlim(0,8)
 ax.xaxis.set_rotate_label(False)
 ax.yaxis.set_rotate_label(False)
-ax.set_xlabel(r'$\beta_1$', labelpad=-10)
-ax.set_ylabel(r'$\beta_2$', labelpad=-10)
+# ax.set_xlabel(r'$\beta_0$', labelpad=-10)
+# ax.set_ylabel(r'$\beta_1$', labelpad=-10)
 ax.set_zlabel(r'')
 ax.set_xticklabels([])
 ax.set_yticklabels([])
@@ -143,6 +116,57 @@ ax.zaxis.pane.fill = False
 ax.xaxis.pane.set_edgecolor('w')
 ax.yaxis.pane.set_edgecolor('w')
 ax.zaxis.pane.set_edgecolor('w')
+ax.set_box_aspect(aspect = (1,1,0.5))
+
+counter = 0
+def snapshot():
+    global counter
+    fig.savefig(path/f'lsqr_3d_snapshot{counter:d}.png', dpi=300)
+    counter += 1
+# plot origin
+ax.plot(0,0,0, 'o', zorder=11, color='navy', ms=3)
+snapshot()
+b = np.array([6.423,-4.157,8.713], dtype=float)
+b_parallel = b-(plane_vec*b).sum()*plane_vec
+a = Arrow3D([0,b[0]],[0,b[1]],[0,b[2]],
+            mutation_scale=10, zorder=10,
+            lw=2, arrowstyle="->", color="orange")
+ax.add_artist(a)
+snapshot()
+# plot x0 and x1
+a = Arrow3D([0,b_parallel[0]],[0,0],[0,0],
+            mutation_scale=10, zorder=10, alpha=0.8,
+            lw=2, arrowstyle="->", color="gray")
+ax.add_artist(a)
+snapshot()
+a = Arrow3D([0,0],[0,b_parallel[1]*1.4],[0,0],
+            mutation_scale=10, zorder=10, alpha=0.8,
+            lw=2, arrowstyle="->", color="gray")
+ax.add_artist(a)
+snapshot()
+# plot X*beta
+a = Arrow3D([0,b_parallel[0]],[0,b_parallel[1]],[0,b_parallel[2]],
+            mutation_scale=10, zorder=10, shrinkA=0,
+            lw=2, arrowstyle="->", color="darkgreen")
+ax.add_artist(a)
+snapshot()
+# plot plane containing X*beta
+ax.plot_surface(xx, yy, zz, rstride=1, cstride=1, alpha=0.3, color='darkgreen', ec='darkgreen',
+                lw=0, antialiased=False, shade=False, zorder=0)
+snapshot()
+# plot epsilon
+ratio=1
+line=Arrow3D(
+        [b[0]*ratio,b_parallel[0]*ratio],
+        [b[1]*ratio,b_parallel[1]*ratio],
+        [b[2]*ratio,b_parallel[2]*ratio], 
+        mutation_scale=10,
+        zorder=10, shrinkB=0, lw=2, arrowstyle="<-", color='r')
+ax.add_artist(line)
+snapshot()
+
+length = np.sqrt(np.sum((b_parallel-b)**2))
+ax.set_title(f'长度={length:.3f}', color='#8D0000', y=0.93)
 
 from scipy.interpolate import interp1d
 theta = np.arange(0,1.01,0.1)*np.pi*2 -np.pi
@@ -172,7 +196,7 @@ y_trajectory = np.hstack((y_trajectory[idx:], y_trajectory[:idx+1]))
 z_trajectory = np.hstack((z_trajectory[idx:], z_trajectory[:idx+1]))
 traj = np.array([x_trajectory, y_trajectory, z_trajectory])
 
-plt.savefig(path/'lsq-3d-v2.pdf')
+plt.savefig(path/'lsq-3d-v2.png', dpi=300)
 #%%
 # create a figure updater
 nframes=240
