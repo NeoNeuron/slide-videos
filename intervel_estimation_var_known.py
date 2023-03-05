@@ -67,7 +67,7 @@ class UpdateDist:
         self.ax0 = ax0
         xn, yn = 10, 1
         xx, yy = np.meshgrid(np.arange(xn), np.arange(yn))
-        self.sc_car  = ax0.scatter(xx.flatten(),yy.flatten(),s=12000, 
+        self.sc_car  = ax0.scatter(xx.flatten(),yy.flatten(),s=4500, 
                                    fc='w', ec='k', marker=car_marker)
         self.color = np.tile([0,32./255,96./255,1],(int(xn*yn),1))
         self.ax0.set_xlim(-1,xn)
@@ -112,11 +112,11 @@ class UpdateDist:
         self.bottom1.spines['right'].set_visible(False)
         
         #bottom plot2
-        self.line2,=ax_bottom2.plot([],[],linestyle='-',color='black',lw=5,zorder=1)
+        self.line2,=ax_bottom2.plot([],[],linestyle='-',color='r',lw=5,zorder=1)
         ax_bottom2.set_xlabel('置信区间数', fontsize=40)
-        ax_bottom2.set_ylabel('在置信区间内\n的累计频率', fontsize=40)
-        ax_bottom2.plot([0,200],[0.95,0.95],'--',color='red',lw=5,zorder=0)
-        ax_bottom2.text(200,0.93,r'$\alpha=0.95$',fontsize=40,color='r',zorder=0, ha='right', va='top')
+        ax_bottom2.set_ylabel('在置信区间内的累计频率', fontsize=40)
+        ax_bottom2.plot([0,200],[0.95,0.95],'--',color='grey',lw=5,zorder=0)
+        ax_bottom2.text(200,0.93,r'$\alpha=0.95$',fontsize=40,color='grey',zorder=0, ha='right', va='top')
         
         # now determine nice limits by hand:
         xlim1 = (-1, frequency.shape[0]+1)
@@ -165,19 +165,19 @@ class UpdateDist:
         return self.rects
     
     
-#%%
 fig = plt.figure(figsize=(30,12))
-spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.04, right=0.72, top=1.0, bottom=0.8, figure=fig)
+spec1 = gridspec.GridSpec(ncols=1, nrows=1, left=0.06, right=0.43, top=1.0, bottom=0.8, figure=fig)
 ax0 = fig.add_subplot(spec1[0])
 ax0.axis('off')
-spec3 = gridspec.GridSpec(ncols=1, nrows=1, left=0.72, right=0.95, top=0.94, bottom=0.88, figure=fig)
+spec3 = gridspec.GridSpec(ncols=1, nrows=1, left=0.43, right=0.52, top=0.92, bottom=0.89, figure=fig)
 ax2 = fig.add_subplot(spec3[0]) 
-spec4 = gridspec.GridSpec(ncols=1, nrows=1, left=0.08, right=0.95, top=0.82, bottom=0.56, figure=fig)
+spec4 = gridspec.GridSpec(ncols=1, nrows=1, left=0.08, right=0.52, top=0.80, bottom=0.50, figure=fig)
 ax4=fig.add_subplot(spec4[0]) 
 
-spec2 = gridspec.GridSpec(ncols=2, nrows=1, left=0.08, right=0.95, top=0.45, bottom=0.1, wspace=0.25, figure=fig)
+spec2 = gridspec.GridSpec(ncols=1, nrows=1, left=0.08, right=0.52, top=0.40, bottom=0.1, wspace=0.25, figure=fig)
 ax1 = fig.add_subplot(spec2[0])
-ax3 = fig.add_subplot(spec2[1])
+spec2 = gridspec.GridSpec(ncols=1, nrows=1, left=0.58, right=0.95, top=0.95, bottom=0.1, wspace=0.25, figure=fig)
+ax3 = fig.add_subplot(spec2[0])
 ud = UpdateDist(ax0, ax4, ax2,ax1,ax3)
 plt.savefig(path/'test.pdf')
 #%%
