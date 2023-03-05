@@ -99,14 +99,12 @@ class UpdateFigure:
         self.ax2 = ax2
         snapshot()
         # ====================
-        # draw x1=0.3 vertical line
+        # draw x1=0.3
         # ====================
         scatter = ax2.scatter([0.3],[0],s=200, marker='x', lw=4, c='#92D050',zorder=10, clip_on=False)
-        line = ax2.axvline(0.3, ls='--', lw=3, c='#92D050')
         print(mn.pdf((0.3,0.7), self.mean, self.cov))
         snapshot()
         scatter.remove()
-        line.remove()
         self.y0=0
 
     @staticmethod

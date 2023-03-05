@@ -5,7 +5,6 @@ path.mkdir(exist_ok=True)
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
-import matplotlib.gridspec as gridspec
 from scipy.stats import multivariate_normal as mn
 from scipy.stats import norm
 # %%
@@ -38,10 +37,12 @@ class scatter_anim:
 
 class scatter2hist(scatter_anim):
     def __init__(self, ax, ax1, ax2, data):
-        super().__init__(ax, data)
+        new_data = data.copy()
+        new_data[data<0] = 1./24
+        super().__init__(ax, new_data)
         self.scatter_main.set_data(self.data[:,0], self.data[:,1])
         self.scatter_main.set_alpha(0.3)
-        self.ax.plot(data[:,0], data[:,1],'o', alpha=0.5, ms=5,
+        self.ax.plot(self.data[:,0], self.data[:,1],'o', alpha=0.5, ms=5,
                     mec='#353A71', mfc='#A7BED2')
         self.bins= 20
         self.range = (0,1)
@@ -60,7 +61,7 @@ class scatter2hist(scatter_anim):
         dx = dy = 1./24
         # bias = 0.01
         # speed = dx*2*(1-self.data[:,1]) + bias
-        if i > 0 and i <= int(1/dx)+12:
+        if i > 0 and i <= int(1/dx):
             new_x = self.data[:,0]+dx*i
             self.scatter_main.set_data(new_x, self.data[:,1])
             counts = self.hist(self.data[new_x>1, 1])
@@ -72,26 +73,27 @@ class scatter2hist(scatter_anim):
             counts = self.hist(self.data[new_y>1, 0])
             for bar, count in zip(self.bar2, counts):
                 bar.set_height(count)
-        elif i ==int(1/dx)*2+18:
-            x_grid = y_grid = np.linspace(*self.range,100)
+        elif i ==int(1/dx)+6:
+            y_grid = np.linspace(*self.range,100)
             self.ax1.plot(norm.pdf(y_grid, loc=0.55, scale=np.sqrt(1/32))*400/self.bins, y_grid, 'k')
+        elif i == int(1/dx)*2+18:
+            x_grid = np.linspace(*self.range,100)
             self.ax2.plot(x_grid, norm.pdf(x_grid, loc=0.45, scale=np.sqrt(1/32))*400/self.bins, 'k')
         return self.bar1
             
     def hist(self, x):
         counts, _ = np.histogram(x, bins=self.bins, range=self.range)
         return counts
-
+# data
+mean = np.array([0.45,0.55])
+cov = np.array([[1, 0.95], [0.95, 1]])/32.
+np.random.seed(1)
+data = np.random.multivariate_normal(mean, cov, (10000,))
         
 #%%
 fig, ax = plt.subplots(2, 1, figsize=(4,4), gridspec_kw=dict( 
     left=0.08, right=0.95, top=0.95, bottom=0.15,
     hspace=0.5, wspace=0.3))
-
-mean = np.array([0.45,0.55])
-cov = np.array([[1, 0.95], [0.95, 1]])/32.
-np.random.seed(1)
-data = np.random.multivariate_normal(mean, cov, (10000,))
 data[12,:] = [0.3, 0.7]
 for idx, label in enumerate(('CPU负载', '内存占用')):
     ax[idx].plot(np.arange(1,26), data[:25,idx], '-o',ms=5, mew=1., 
