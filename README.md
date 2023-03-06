@@ -109,6 +109,7 @@ conda env create -y -f requirements.yml
     - `lln.py`
 
 15. 区间估计
+    - `mean_estimation_demo.py`
     - `intervel_estimation_var_known.py`
     - `intervel_estimation_var_unknown.py`
 

@@ -7,12 +7,11 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.animation import FuncAnimation
-from scipy.stats import bernoulli
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
 # matplotlib parameters to ensure correctness of Chinese characters 
 plt.rcParams["font.family"] = 'sans-serif'
-plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
+plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'Microsoft YaHei'] # Chinese font
 plt.rcParams['axes.unicode_minus']=False # correct minus sign
 
 plt.rcParams["font.size"] = 20
