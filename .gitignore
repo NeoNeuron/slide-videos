@@ -1,0 +1,8 @@
+.DS_Store
+*.pptx
+*.mp4
+*.pdf
+*.png
+*.zip
+__pycache__
+code

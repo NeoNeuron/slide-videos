@@ -98,8 +98,8 @@ class UpdateFigure:
         ax3.text(-0.225,0.5,r'$f(x|\quad\qquad\qquad)$', fontsize=25,
             ha='center', va='center', rotation=90, color='k', transform=ax3.transAxes)
         ax3.set_ylabel(r'$y=%.2f$'%self.y0, color='red', fontsize=22, y=0.59)
-        ax3.set_xticks(xticks, fontsize=20)
-        ax3.set_yticks([0,0.1,0.2], fontsize=20)
+        ax3.set_xticks(xticks)
+        ax3.set_yticks([0,0.1,0.2])
         ax3.set_xlim(xticks[0], xticks[-1])
         ax3.set_ylim(zticks[0], zticks[-1])
         ax3.spines['top'].set_visible(False)

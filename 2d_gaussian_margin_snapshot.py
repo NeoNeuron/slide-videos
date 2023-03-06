@@ -87,9 +87,9 @@ class UpdateFigure:
         ax2.text(-0.155,0.5,r'$f(x|\qquad\qquad)$', fontsize=25,
             ha='center', va='center', rotation=90, color='k', transform=ax2.transAxes)
         ax2.set_ylabel(r'$y=%.2f$'%self.y0, color='red', fontsize=24, y=0.59)
-        ax2.set_xticks([0,0.2,0.4,0.6,0.8,1.0], fontsize=20)
+        ax2.set_xticks([0,0.2,0.4,0.6,0.8,1.0])
         ax2.tick_params(axis='x', which='major', pad=5)
-        ax2.set_yticks([0,5,10,15], fontsize=20)
+        ax2.set_yticks([0,5,10,15])
         ax2.set_xlim(xticks[0], xticks[-1])
         ax2.set_ylim(zticks[0], zticks[-1])
         ax2.spines['top'].set_visible(False)
