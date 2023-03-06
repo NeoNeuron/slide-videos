@@ -1,6 +1,6 @@
 # %%
 from pathlib import Path
-path = Path('moment_estimation/')
+path = Path('./videos/moment_estimation/')
 path.mkdir(exist_ok=True)
 import numpy as np
 import matplotlib as mpl
@@ -8,10 +8,6 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
-# matplotlib parameters to ensure correctness of Chinese characters 
-plt.rcParams["font.family"] = 'sans-serif'
-plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
-plt.rcParams['axes.unicode_minus']=False # correct minus sign
 
 plt.rcParams["font.size"] = 18
 plt.rcParams["xtick.labelsize"] = 35
@@ -42,7 +38,7 @@ ax.axis('off')
 # %%
 #数据
 np.random.seed(1901)
-mean,std=600,10 #均值，标准差
+mean,std=600,np.sqrt(2380) #均值，标准差
 size=(200, 10)
 data=np.random.randn(*size)*std+mean
 data_norm=(data-data.min())/(data.max()-data.min())
@@ -146,7 +142,7 @@ class UpdateDist:
         ax_colorbar.imshow(gradient, aspect='auto', cmap=self.cm, alpha=0.7)
         ax_colorbar.set_yticks([])
         ax_colorbar.set_xticks([0, 255])
-        ax_colorbar.set_xticklabels(['560', '630'])
+        ax_colorbar.set_xticklabels(['500', '700'])
         for size in ax_colorbar.get_xticklabels(): 
             size.set_fontsize('50')
         ax_colorbar.set_title('里程数', fontsize=50)
@@ -195,7 +191,7 @@ def gen_movie(data_low, data_high, label, fname, **kwargs):
     spec3 = plt.GridSpec(ncols=1, nrows=1, left=0.73, right=0.90, top=0.9, bottom=0.83, )
     ax2 = fig.add_subplot(spec3[0])
     gs = plt.GridSpec(ncols=2, nrows=1,
-                      left=0.10, right=0.96, top=0.68, bottom=0.12, wspace=0.8)
+                      left=0.10, right=0.96, top=0.68, bottom=0.14, wspace=0.8)
     ax = [fig.add_subplot(gsi) for gsi in gs]
     for axi in ax:
         axi.set_xlabel('样本组编号', fontsize=50)
@@ -206,6 +202,6 @@ def gen_movie(data_low, data_high, label, fname, **kwargs):
     anim.save(path/fname, fps=12, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 
 # %%
-gen_movie(data_mean, data_mean2, r'$\hat{\mu}$', 'mean.mp4', data_ylim=(560,630), gt=600)
-gen_movie(data_sigma, data_sigma2, r'$\widehat{\sigma^2}$', 'sigma.mp4', data_ylim=(0,2100), gt=100)
+gen_movie(data_mean, data_mean2, r'$\hat{\mu}$', 'mean.mp4', data_ylim=(430,760), gt=600)
+gen_movie(data_sigma, data_sigma2, r'$\widehat{\sigma^2}$', 'sigma.mp4', data_ylim=(100,8600), gt=2380)
 # %%
