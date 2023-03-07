@@ -1,15 +1,12 @@
 # %%
 from pathlib import Path
-path = Path('./moment_estimation/')
+path = Path(__file__).parents[1]/'videos/moment_estimation/'
+path.mkdir(parents=True, exist_ok=True)
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 from matplotlib.animation import FuncAnimation
 # matplotlib parameters to ensure correctness of Chinese characters 
-plt.rcParams["font.family"] = 'sans-serif'
-plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
-plt.rcParams['axes.unicode_minus']=False # correct minus sign
-
 plt.rcParams["font.size"] = 16
 plt.rcParams["xtick.labelsize"] = 16
 plt.rcParams["ytick.labelsize"] = 16
@@ -49,13 +46,15 @@ class UpdateFigure:
     def __call__(self, i):
         # This way the plot can continuously run and we just keep
         # watching new realizations of the process
-        if i < 101:
+        if i > 0 and i <= 101:
             if self.var_name == 'mean':
-                y = norm.pdf(self.x,loc=self.mean+i*self.dx, scale=self.std)
+                y = norm.pdf(self.x,loc=self.mean+(i-1)*self.dx, scale=self.std)
             elif self.var_name == 'std':
-                y = norm.pdf(self.x,loc=self.mean, scale=self.std+i*self.dx)
+                y = norm.pdf(self.x,loc=self.mean, scale=self.std+(i-1)*self.dx)
             self.update_gauss(y)
-        elif i == 101:
+        else:
+            pass
+        if i == 1:
             if self.var_name == 'mean':
                 text = r'$EX=$%2d'%self.var_range[1]
             elif self.var_name == 'std':
@@ -64,38 +63,9 @@ class UpdateFigure:
                          text, ha='left',usetex=True,
                          fontsize=25, color=self.c, 
                          transform=self.ax.transAxes)
-        else:
-            pass
         return self.line
 
-#! ============================================================
-#! evolve std
-fig, ax = plt.subplots(1,1, figsize=(5,3.5), dpi=400)
-x = np.linspace(-6, 6, 401)
-y = norm.pdf(x, loc=0, scale=1)
-ax.plot(x, y, color='b', zorder=1)
-ax.text(0.75, 0.88, 
-        r'$EX^2=$%2d'%(1.0), ha='left',usetex=True,
-        fontsize=25, color='b', 
-        transform=ax.transAxes)
-ax.set_xlim(-6.0, 6.0)
-ax.set_xticks([-6,-3,0,3,6])
-ax.set_ylim(0, 0.5)
-ax.set_yticks(np.arange(1,6)*0.1)
-ax.spines['left'].set_position(('data', 0))
-ax.text(1.05, -0.03, r'$x$', ha='left',
-        usetex=True, fontsize=25, color='k', 
-        transform=ax.transAxes)
 #%%
-# create a figure updater
-ud = UpdateFigure(ax, x, 'std', (1,2), 'g', (0.75,0.75))
-anim = FuncAnimation(fig, ud, frames=121, blit=True)
-anim.save(path/'evolve_moment1.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
-
-ud = UpdateFigure(ax, x, 'std', (2,3), 'r', (0.75,0.62))
-anim = FuncAnimation(fig, ud, frames=121, blit=True)
-anim.save(path/'evolve_moment2.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
-
 #! ============================================================
 #! evolve mean
 fig, ax = plt.subplots(1,1, figsize=(5,3.5), dpi=400)
@@ -118,9 +88,36 @@ ax.text(1.05, -0.03, r'$x$', ha='left',
 # create a figure updater
 ud = UpdateFigure(ax, x, 'mean', (0,2), 'g', (0.75,0.75))
 anim = FuncAnimation(fig, ud, frames=121, blit=True)
-anim.save(path/'evolve_moment3.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'evolve_moment1.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 
 ud = UpdateFigure(ax, x, 'mean', (0,-2), 'r', (0.75,0.62))
+anim = FuncAnimation(fig, ud, frames=121, blit=True)
+anim.save(path/'evolve_moment2.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+#%%
+#! ============================================================
+#! evolve std
+fig, ax = plt.subplots(1,1, figsize=(5,3.5), dpi=400)
+x = np.linspace(-6, 6, 401)
+y = norm.pdf(x, loc=0, scale=1)
+ax.plot(x, y, color='b', zorder=1)
+ax.text(0.75, 0.88, 
+        r'$EX^2=$%2d'%(1.0), ha='left',usetex=True,
+        fontsize=25, color='b', 
+        transform=ax.transAxes)
+ax.set_xlim(-6.0, 6.0)
+ax.set_xticks([-6,-3,0,3,6])
+ax.set_ylim(0, 0.5)
+ax.set_yticks(np.arange(1,6)*0.1)
+ax.spines['left'].set_position(('data', 0))
+ax.text(1.05, -0.03, r'$x$', ha='left',
+        usetex=True, fontsize=25, color='k', 
+        transform=ax.transAxes)
+# create a figure updater
+ud = UpdateFigure(ax, x, 'std', (1,2), 'g', (0.75,0.75))
+anim = FuncAnimation(fig, ud, frames=121, blit=True)
+anim.save(path/'evolve_moment3.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+
+ud = UpdateFigure(ax, x, 'std', (2,3), 'r', (0.75,0.62))
 anim = FuncAnimation(fig, ud, frames=121, blit=True)
 anim.save(path/'evolve_moment4.mp4', fps=60, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
@@ -150,13 +147,13 @@ class UpdateFigure:
             old_x = self.line.get_xdata()
             old_y = self.line.get_ydata()
             self.line.set_data(old_x + self.dx, old_y + self.dy)
-        elif i == 101:
+        else:
+            pass
+        if i == 1:
             self.ax.text(self.text_pos[0], self.text_pos[1], 
                          self.text, ha='left',usetex=True,
                          fontsize=25, color=self.line.get_color(), 
                          transform=self.ax.transAxes)
-        else:
-            pass
         return [self.line]
 # %%
 from scipy.stats import gamma

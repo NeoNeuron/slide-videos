@@ -1,7 +1,7 @@
 # %%
 from pathlib import Path
-path = Path('./videos/moment_estimation/')
-path.mkdir(exist_ok=True)
+path = Path(__file__).parents[1]/'videos/moment_estimation/'
+path.mkdir(parents=True, exist_ok=True)
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
