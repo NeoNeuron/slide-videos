@@ -1,16 +1,13 @@
 # %%
+from pathlib import Path
+path = Path('./videos/hypothesis_test/')
+path.mkdir(parents=True, exist_ok=True)
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from scipy.stats import norm
-# matplotlib parameters to ensure correctness of Chinese characters 
-plt.rcParams["font.family"] = 'sans-serif'
-plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
-plt.rcParams['axes.unicode_minus']=False # correct minus sign
-
-plt.rcParams["font.size"] = 20
-plt.rcParams["xtick.labelsize"] = 24
-plt.rcParams["ytick.labelsize"] = 24
+plt.rcParams["xtick.labelsize"] = 14
+plt.rcParams["ytick.labelsize"] = 14
 
 #%%
 class UpdateFigure_scatter_hist:
@@ -66,22 +63,24 @@ class UpdateFigure_scatter_hist:
         self.ax_right= ax_right
         self.last_bin=None
 
-    def __call__(self, i):
+    def __call__(self, ii):
         # This way the plot can continuously run and we just keep
         # watching new realizations of the process
 
+        i = ii // 4
         if i > 0 and i<=self.data.shape[0]:
             if self.last_bin is not None:
                 self.rects[self.last_bin].set_alpha(0.5)
             # update lines
             self.line_main.set_data(self.trials[:i], self.data[:i])
 
+            counts, _ = np.histogram(self.data[:i], range=self.range, bins = self.bins)
             # update the height of bars for histogram
-            idx = int((self.data[i-1]-self.range[0])//self.binsize)
-            self.rects[idx].set_width(self.rects[idx].get_width()+1)
-            self.rects[idx].set_alpha(1)
-            self.last_bin = idx
-        elif i == self.data.shape[0]+1:
+            last_idx = int((self.data[i-1]-self.range[0])//self.binsize)
+            self.rects[last_idx].set_width(counts[last_idx])
+            self.rects[last_idx].set_alpha(1)
+            self.last_bin = last_idx
+        elif i == self.data.shape[0]+3:
             for rect in self.rects:
                 rect.set_alpha(1)
             self.ax_main.axhline(self.data.mean(), color='b',ls='--')
@@ -96,19 +95,19 @@ K = 25 # number of random tests
 # generate sampling data
 rv = norm.rvs(loc=7.1, scale=0.2, size=(K,), random_state=99238)
 
-fig, ax = plt.subplots(1,2,figsize=(15,3),dpi=100, 
-                       gridspec_kw={'width_ratios':[3,1], 'wspace':0.05, 'left':0.08, 'right':0.98, 'bottom':0.25, 'top':0.95})
-ax[0].set_xlabel('采样次数', fontsize=25)
-ax[0].set_ylabel('产量(吨/公顷)', fontsize=25)
-ax[1].set_xlabel('频数', fontsize=25)
+fig, ax = plt.subplots(1,2,figsize=(10,2),dpi=100, 
+                       gridspec_kw={'width_ratios':[3,1], 'wspace':0.05, 'left':0.08, 'right':0.98, 'bottom':0.30, 'top':0.95})
+ax[0].set_xlabel('采样次数', fontsize=20, labelpad=0)
+ax[0].set_ylabel('产量(吨/公顷)', fontsize=20, y=0.4)
+ax[1].set_xlabel('频数', fontsize=20, labelpad=0)
 # no labels
 from matplotlib.ticker import NullFormatter 
 ax[1].yaxis.set_major_formatter(NullFormatter())
 
 # create a figure updater
-ud = UpdateFigure_scatter_hist(rv, ax[0], ax[1],(6.6, 7.6))
+ud = UpdateFigure_scatter_hist(rv, ax[0], ax[1],(6.6, 7.55))
 # user FuncAnimation to generate frames of animation
-anim = FuncAnimation(fig, ud, frames=36, blit=True)
+anim = FuncAnimation(fig, ud, frames=144, blit=True)
 # save animation as *.mp4
-anim.save('hypothesis_sampling.mp4', fps=6, dpi=300, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'hypothesis_sampling.mp4', fps=24, dpi=300, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
