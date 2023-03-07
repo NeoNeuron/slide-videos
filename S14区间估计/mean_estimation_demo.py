@@ -1,18 +1,13 @@
 # %%
 from pathlib import Path
-path = Path('./intervel_estimation/')
-path.mkdir(exist_ok=True)
+path = Path(__file__).parents[1]/'videos/intervel_estimation/'
+path.mkdir(parents=True, exist_ok=True)
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
-# matplotlib parameters to ensure correctness of Chinese characters 
-plt.rcParams["font.family"] = 'sans-serif'
-plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
-plt.rcParams['axes.unicode_minus']=False # correct minus sign
-
 plt.rcParams["font.size"] = 20
 plt.rcParams["xtick.labelsize"] = 30
 plt.rcParams["ytick.labelsize"] = 30
@@ -33,7 +28,7 @@ def gen_marker(fname:str, rotation:float=180):
     person_marker = person_marker.transformed(mpl.transforms.Affine2D().scale(-1,1))
     return person_marker
 
-car_marker = gen_marker('icons/car.svg',)
+car_marker = gen_marker(path.parents[1]/'icons/car.svg',)
 # %% 
 class UpdateFigures(object):
     def __init__(self, ax, data) -> None:

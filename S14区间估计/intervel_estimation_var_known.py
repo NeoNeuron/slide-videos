@@ -1,7 +1,7 @@
 # %%
 from pathlib import Path
-path = Path('./intervel_estimation/')
-path.mkdir(exist_ok=True)
+path = Path(__file__).parents[1]/'videos/intervel_estimation/'
+path.mkdir(parents=True, exist_ok=True)
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -9,11 +9,6 @@ import matplotlib.gridspec as gridspec
 from matplotlib.animation import FuncAnimation
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
-# matplotlib parameters to ensure correctness of Chinese characters 
-plt.rcParams["font.family"] = 'sans-serif'
-plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'Microsoft YaHei'] # Chinese font
-plt.rcParams['axes.unicode_minus']=False # correct minus sign
-
 plt.rcParams["font.size"] = 20
 plt.rcParams["xtick.labelsize"] = 30
 plt.rcParams["ytick.labelsize"] = 30
@@ -57,7 +52,7 @@ def gen_marker(fname:str, rotation:float=180):
     person_marker = person_marker.transformed(mpl.transforms.Affine2D().scale(-1,1))
     return person_marker
 
-car_marker = gen_marker('icons/car.svg',)
+car_marker = gen_marker(path.parents[1]/'icons/car.svg',)
 
 # %%
 class UpdateDist:
@@ -139,13 +134,8 @@ class UpdateDist:
         # This way the plot can continuously run and we just keep
         # watching new realizations of the process
 
-        if i <= data_mean.shape[0]:
-            if i == 0:
-                i = 20 # frontpage
-            n_inc = 1
-            # update lines
-            idx = (i)*n_inc
-            #更新区间图
+        if i > 0 and i <= data_mean.shape[0]:
+            # update interval
             self.line_main1.set_data([data_mean[i]-length,data_mean[i]-length],[-0.5,0.5])
             self.line_main2.set_data([data_mean[i]+length,data_mean[i]+length],[-0.5,0.5])
             self.shadow.set_verts([[[data_mean[i]-length,-0.5],[data_mean[i]-length,0.5],[data_mean[i]+length,0.5],[data_mean[i]+length,-0.5]]])
@@ -154,11 +144,20 @@ class UpdateDist:
             positive = np.sum(test[:i+1]) #索赔车辆数
             for rect, h in zip(self.rects, [positive, negative]): 
                 rect.set_width(h)
-            #更新频率图
-            self.line2.set_data(index[:idx], frequency[:idx])
+            # update histogram
+            self.line2.set_data(index[:i], frequency[:i])
             
             # update scatter facecolor
-            self.color = self.cm(data_norm[idx-1])
+            self.color = self.cm(data_norm[i-1])
+            self.sc_car.set_facecolor(self.color)
+        elif i == 0:
+            # update interval
+            i = 20
+            self.line_main1.set_data([data_mean[i]-length,data_mean[i]-length],[-0.5,0.5])
+            self.line_main2.set_data([data_mean[i]+length,data_mean[i]+length],[-0.5,0.5])
+            self.shadow.set_verts([[[data_mean[i]-length,-0.5],[data_mean[i]-length,0.5],[data_mean[i]+length,0.5],[data_mean[i]+length,-0.5]]])
+            # update scatter facecolor
+            self.color = self.cm(data_norm[i-1])
             self.sc_car.set_facecolor(self.color)
             
         return self.rects
@@ -181,7 +180,7 @@ ud = UpdateDist(ax0, ax4, ax2,ax1,ax3)
 plt.savefig(path/'test.pdf')
 #%%
 anim = FuncAnimation(fig, ud, frames=198, blit=True)
-anim.save(path/'mileagejie_2.mp4', fps=10, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'intervel_est_var_known.mp4', fps=10, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
 
 

@@ -1,7 +1,7 @@
 # %%
 from pathlib import Path
-path = Path('./intervel_estimation/')
-path.mkdir(exist_ok=True)
+path = Path(__file__).parents[1]/'videos/intervel_estimation/'
+path.mkdir(parents=True, exist_ok=True)
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -10,11 +10,6 @@ from matplotlib.animation import FuncAnimation
 from scipy.stats import t
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
-# matplotlib parameters to ensure correctness of Chinese characters 
-plt.rcParams["font.family"] = 'sans-serif'
-plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
-plt.rcParams['axes.unicode_minus']=False # correct minus sign
-
 plt.rcParams["font.size"] = 20
 plt.rcParams["xtick.labelsize"] = 24
 plt.rcParams["ytick.labelsize"] = 24
@@ -45,7 +40,7 @@ def gen_marker(fname:str, rotation:float=180):
     person_marker = person_marker.transformed(mpl.transforms.Affine2D().scale(-1,1))
     return person_marker
 
-car_marker = gen_marker('icons/car.svg',)
+car_marker = gen_marker(path.parents[1]/'icons/car.svg',)
 
 # %%
 class UpdateDist:
@@ -126,7 +121,7 @@ ax1 = fig.add_subplot(spec2[0])
 ud = UpdateDist(ax0, ax1,ax2)
 anim = FuncAnimation(fig, ud, frames=210, blit=True)
 #%%
-anim.save(path/'mileagejie_1.mp4', fps=10, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'intervel_est_var_unknown.mp4', fps=10, dpi=100, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%
 
 
