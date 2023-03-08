@@ -1,12 +1,5 @@
 # %%
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-# matplotlib parameters to ensure correctness of Chinese characters 
-plt.rcParams["font.family"] = 'sans-serif'
-plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
-plt.rcParams['axes.unicode_minus']=False # correct minus sign
-
+from init import *
 plt.rcParams["font.size"] = 20
 plt.rcParams["xtick.labelsize"] = 12
 plt.rcParams["ytick.labelsize"] = 12
@@ -95,5 +88,5 @@ ud = UpdateFigure(ax, data, dx=0.05)
 # user FuncAnimation to generate frames of animation
 anim = FuncAnimation(fig, ud, frames=399, blit=True)
 # save animation as *.mp4
-anim.save('bm_movie.mp4', fps=48, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'bm_movie.mp4', fps=48, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%

@@ -1,16 +1,6 @@
 # 
 # %%
-from pathlib import Path
-path = Path('./variance/')
-path.mkdir(exist_ok=True)
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-# matplotlib parameters to ensure correctness of Chinese characters 
-plt.rcParams["font.family"] = 'sans-serif'
-plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'SimHei'] # Chinese font
-plt.rcParams['axes.unicode_minus']=False # correct minus sign
-
+from init import *
 plt.rcParams["axes.labelsize"] = 45
 plt.rcParams["xtick.labelsize"] = 24
 plt.rcParams["ytick.labelsize"] = 24

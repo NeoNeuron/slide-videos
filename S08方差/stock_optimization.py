@@ -1,7 +1,5 @@
 #%%
-import numpy as np
-import matplotlib.pyplot as plt
-#%%
+from init import *
 x1 = np.arange(1800)
 x2 = np.arange(2400)
 x1, x2 = np.meshgrid(x1, x2)

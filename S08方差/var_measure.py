@@ -1,19 +1,10 @@
 # %%
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from init import *
 from matplotlib.ticker import NullFormatter 
 from scipy.stats import norm
-# matplotlib parameters to ensure correctness of Chinese characters 
-plt.rcParams["font.family"] = 'sans-serif'
-plt.rcParams['font.sans-serif']=['Arial Unicode MS', 'Microsoft YaHei'] # Chinese font
-plt.rcParams['axes.unicode_minus']=False # correct minus sign
-
 plt.rcParams["font.size"] = 20
 plt.rcParams["xtick.labelsize"] = 24
 plt.rcParams["ytick.labelsize"] = 24
-from pathlib import Path
-path = Path('./variance/')
 
 #%%
 class UpdateFigure_scatter:
@@ -65,12 +56,13 @@ class UpdateFigure_scatter:
 theta1 = []
 theta2 = []
 theta3 = []
-batch_size = [1, 5, 50]
+batch_size = [1, 5]
 # n_samples = [240, 80, 24]
-n_samples = [100, 100, 100]
+n_samples = [150, 150]
 for _n, _bs in zip(n_samples, batch_size):
     rv = norm.rvs(size=(_n,_bs), random_state=9923)
     theta1.append(np.mean(rv, axis=1, dtype=float))
+    rv = norm.rvs(size=(_n,_bs), random_state=923)
     theta2.append(np.median(rv, axis=1))
     if _bs > 1:
         # factor = (1/(_bs-np.arange(int(_bs/2)))).sum()
@@ -85,7 +77,6 @@ thetas = [theta1, theta3]
 ylabels = [r'$\hat{\theta}_1$', r'$\hat{\theta}_2$']
 fname_tags = ['mean', 'median_fix']
 ylims = [(-5,5), (-5,5)]
-
 def gen_activation2(theta, ylabel, fname_tag, ylim):
     fig, ax = plt.subplots(1,1,figsize=(10.5,7),dpi=100, 
                        gridspec_kw={'left':0.12, 'right':0.98, 
@@ -95,9 +86,9 @@ def gen_activation2(theta, ylabel, fname_tag, ylim):
     ax.set_yticks(np.arange(-4,5,2))
     ax.set_yticklabels([r'$\mu-4\sigma$', r'$\mu-2\sigma$', r'$\mu$', r'$\mu+2\sigma$', r'$\mu+4\sigma$'])
     ax.axhline(5, color='r',ls='--')
-    for i in range(3):
+    for i in range(len(batch_size)):
         ax.axvline(np.cumsum(n_samples)[i], color='gray',ls='--')
-    for i in range(3):
+    for i in range(len(batch_size)):
         ax.text(np.cumsum(n_samples)[i] - n_samples[i]/2, 4.2, f'n={batch_size[i]:d}', ha='center', va='center', fontsize=30)
     ud = UpdateFigure_scatter(theta, ax, ylim)
     # user FuncAnimation to generate frames of animation
