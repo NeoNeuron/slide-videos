@@ -28,6 +28,7 @@ conda env create -y -f requirements.yml
 4. 泊松分布
    - `poisson.py`
    - `inventory.py`
+   - `inventory_sim.py`
    - `inventory_optim.py`
 
 5. 正态分布

@@ -1,10 +1,5 @@
 # %%
-from pathlib import Path
-path = Path('./videos/poisson/')
-path.mkdir(exist_ok=True)
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from init import *
 from scipy.stats import poisson
 plt.rcParams["font.size"] = 20
 plt.rcParams["xtick.labelsize"] = 20
