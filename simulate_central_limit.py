@@ -181,8 +181,8 @@ class UpdateCurve():
         self.ax.set_xlim(-0.5,26)
         if self.xlabel_scale:
             self.ax.set_xticklabels(self.ax.get_xticks()*self.xlabel_scale)
-        self.ax.set_ylabel('算术平均值')
-        self.ax.set_xlabel('样本数 n')
+        self.ax.set_ylabel('算术平均值', fontsize=18)
+        self.ax.set_xlabel('样本数 n', fontsize=18)
         self.ax.set_title(f'n = : {0:5d}', fontsize=20)
         self.number_of_sample_list = np.array([1,2,3,4,5,8,12,18,28,43,65,99,151,230, 350])
 
