@@ -1,14 +1,12 @@
 #%%
-from pathlib import Path
-path = Path('./normal_2d/')
-path.mkdir(exist_ok=True)
+from init import *
 from gaussian2d import *
 fig = plt.figure(figsize=(10,5),)
-spec = gridspec.GridSpec(1, 1, 
+spec = fig.add_gridspec(1, 1, 
     left=0.10, right=0.55, top=0.95, bottom=0.05, 
     figure=fig)
 ax2 = fig.add_subplot(spec[0], projection='3d')
-spec = gridspec.GridSpec(2, 1, 
+spec = fig.add_gridspec(2, 1, 
     left=0.6, right=0.90, top=0.9, bottom=0.2, 
     height_ratios=[1,5], hspace=0.3,
     figure=fig)

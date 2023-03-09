@@ -1,8 +1,6 @@
 # %%
+from init import *
 from gaussian2d import *
-from pathlib import Path
-path = Path('./normal_2d/')
-path.mkdir(exist_ok=True)
 fig, ax1, ax2, ax3 = gen_canvas()
 # create a figure updater
 nframes=72

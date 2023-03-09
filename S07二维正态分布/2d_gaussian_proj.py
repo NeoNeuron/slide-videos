@@ -1,9 +1,5 @@
 # %%
-from pathlib import Path
-path = Path('./normal_2d/')
-path.mkdir(exist_ok=True)
-import numpy as np 
-import matplotlib.pyplot as plt
+from init import *
 # matplotlib parameters to ensure correctness of Chinese characters 
 plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'

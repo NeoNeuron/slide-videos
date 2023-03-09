@@ -1,18 +1,11 @@
 #%%
-from pathlib import Path
-path = Path('./normal_2d/')
-path.mkdir(exist_ok=True)
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.animation import FuncAnimation
+from init import *
 from scipy.stats import multivariate_normal as mn
 from scipy.stats import norm
-# %%
 plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'
 plt.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
-
-
+# %%
 class scatter_anim:
     def __init__(self, ax, data):
         # ====================
@@ -92,7 +85,7 @@ data = np.random.multivariate_normal(mean, cov, (10000,))
         
 #%%
 fig, ax = plt.subplots(2, 1, figsize=(4,4), gridspec_kw=dict( 
-    left=0.08, right=0.95, top=0.95, bottom=0.15,
+    left=0.16, right=0.97, top=0.95, bottom=0.15,
     hspace=0.5, wspace=0.3))
 data[12,:] = [0.3, 0.7]
 for idx, label in enumerate(('CPU负载', '内存占用')):
@@ -106,11 +99,15 @@ for idx, label in enumerate(('CPU负载', '内存占用')):
 fig.savefig(path/'cpu_ram_sample_trace.pdf')
 
 fig, ax = plt.subplots(2, 1, figsize=(4.5,4), gridspec_kw=dict( 
-    left=0.14, right=0.95, top=0.95, bottom=0.15,
+    left=0.17, right=0.97, top=0.95, bottom=0.15,
     hspace=0.5, wspace=0.3))
 data[12,:] = [0.38, 0.68]
 for idx, label in enumerate((r'$x$(CPU负载)', r'$y$(内存占用)')):
-    ax[idx].hist(data[0:400,idx], ec='#353A71', fc='#E6782F', range=(0,1), bins=20, clip_on=False)
+    counts, edges = np.histogram(data[0:400,idx], range=(0,1), bins=20)
+    ax[idx].bar(edges[:-1], counts/counts.sum(), width = edges[1]-edges[0], align='edge',
+                ec='#353A71', fc='#E6782F', clip_on=False)
+    x = np.linspace(0,1,100)
+    ax[idx].plot(x, norm.pdf(x, loc=mean[idx], scale=np.sqrt(cov[idx,idx]))*(edges[1]-edges[0]), 'k')
     ax[idx].set_ylabel('频率', fontsize=18)
     ax[idx].set_xlabel(label, fontsize=18)
     ax[idx].set_xlim(0,1)

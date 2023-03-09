@@ -1,13 +1,6 @@
 #%%
-from pathlib import Path
-path = Path('./normal_2d/')
-path.mkdir(exist_ok=True)
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.animation import FuncAnimation
-import matplotlib.gridspec as gridspec
+from init import *
 from scipy.stats import multivariate_normal as mn
-# %%
 plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'
 plt.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
@@ -95,7 +88,7 @@ class UpdateFigure:
         return [self.surf,]
 
 fig = plt.figure(figsize=(6,3))
-spec = gridspec.GridSpec(1, 2, 
+spec = fig.add_gridspec(1, 2, 
     left=0.00, right=0.92, top=1, bottom=0.10, 
     wspace=0.1,
     width_ratios=[6,4], figure=fig)

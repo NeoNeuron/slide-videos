@@ -1,16 +1,12 @@
 #%%
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.animation import FuncAnimation
-import matplotlib.gridspec as gridspec
+from init import *
 from scipy.stats import multivariate_normal as mn
-# %%
 plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'
 plt.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
 plt.rcParams['xtick.labelsize']=20
 plt.rcParams['ytick.labelsize']=20
-
+# %%
 class UpdateFigure:
     def __init__(self, ax1, ax2, ax3):
 
@@ -143,15 +139,15 @@ class UpdateFigure:
 
 def create_canvas_vertical():
     fig = plt.figure(figsize=(5,10),)
-    spec = gridspec.GridSpec(1, 1, 
+    spec = fig.add_gridspec(1, 1, 
         left=0.10, right=0.85, top=0.50, bottom=0.05, 
         figure=fig)
     ax3 = fig.add_subplot(spec[0], )
-    spec = gridspec.GridSpec(1, 1, 
+    spec = fig.add_gridspec(1, 1, 
         left=0.01, right=0.91, top=1.00, bottom=0.45, 
         figure=fig)
     ax2 = fig.add_subplot(spec[0], projection='3d')
-    spec = gridspec.GridSpec(1, 1, 
+    spec = fig.add_gridspec(1, 1, 
         left=0.10, right=0.90, top=1.00, bottom=0.90, 
         figure=fig)
     ax1 = fig.add_subplot(spec[0])
@@ -160,9 +156,6 @@ def create_canvas_vertical():
 # %%
 if __name__ == '__main__':
     # %%
-    from pathlib import Path
-    path = Path('./normal_2d/')
-    path.mkdir(exist_ok=True)
     fig, ax1, ax2, ax3 = create_canvas_vertical()
     # create a figure updater
     nframes=100

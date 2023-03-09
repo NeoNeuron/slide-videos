@@ -1,19 +1,13 @@
 #%%
-from pathlib import Path
-path = Path('./normal_2d/')
-path.mkdir(exist_ok=True)
-import matplotlib.pyplot as plt
-import numpy as np
+from init import *
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-import matplotlib.gridspec as gridspec
-from matplotlib.animation import FuncAnimation
 from scipy.stats import multivariate_normal as mn
-# %%
 plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'
 plt.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
 plt.rcParams['xtick.labelsize']=14
 plt.rcParams['ytick.labelsize']=14
+# %%
 
 COLORS = dict(
     blue        = '#375492',
@@ -140,10 +134,10 @@ class UpdateFigure:
 # create canvas and config axis layouts
 # ====================
 fig = plt.figure(figsize=(10,4.5))
-spec1 = gridspec.GridSpec(1, 1, 
+spec1 = fig.add_gridspec(1, 1, 
     left=-0.05, right=0.50, top=1.05, bottom=0.08, 
     figure=fig)
-spec2 = gridspec.GridSpec(1, 1, 
+spec2 = fig.add_gridspec(1, 1, 
     left=0.6, right=0.96, top=0.88, bottom=0.24, 
     figure=fig)
 ax1 = fig.add_subplot(spec1[0], projection='3d')

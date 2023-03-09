@@ -1,7 +1,5 @@
 #%%
-from pathlib import Path
-path = Path('./normal_2d/')
-path.mkdir(exist_ok=True)
+from init import *
 from gaussian2d import *
 class Update_mu1(UpdateFigure):
     def __init__(self, ax1, ax2, ax3):

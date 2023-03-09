@@ -1,20 +1,13 @@
 #%%
-from pathlib import Path
-path = Path('./normal_2d/')
-path.mkdir(exist_ok=True)
-import matplotlib.pyplot as plt
-import numpy as np
+from init import *
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from matplotlib.animation import FuncAnimation
-import matplotlib.gridspec as gridspec
 from scipy.stats import multivariate_normal as mn
-# %%
 plt.rcParams['grid.color'] = '#A8BDB7'
 plt.rcParams['grid.linestyle'] = '--'
 plt.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
 plt.rcParams['xtick.labelsize']=22
 plt.rcParams['ytick.labelsize']=22
-
+# %%
 class UpdateFigure:
     def __init__(self, ax1, ax2, ax3, mean=None, cov=None, y0=None):
 
@@ -150,15 +143,15 @@ class UpdateFigure:
 # ====================
 def create_canvas():
     fig = plt.figure(figsize=(10,4.5))
-    spec = gridspec.GridSpec(1, 1, 
+    spec = fig.add_gridspec(1, 1, 
     left=-0.05, right=0.50, top=1.05, bottom=0.08, 
     figure=fig)
     ax2 = fig.add_subplot(spec[0], projection='3d')
-    spec = gridspec.GridSpec(1, 1, 
+    spec = fig.add_gridspec(1, 1, 
     left=0.65, right=0.98, top=0.71, bottom=0.20, 
     figure=fig)
     ax3 = fig.add_subplot(spec[0])
-    spec = gridspec.GridSpec(1, 1, 
+    spec = fig.add_gridspec(1, 1, 
     left=0.62, right=0.92, top=0.92, bottom=0.82, 
     figure=fig)
     ax1 = fig.add_subplot(spec[0])
