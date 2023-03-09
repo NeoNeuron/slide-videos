@@ -1,13 +1,8 @@
 #%%
-from pathlib import Path
-path = Path('./geometric_probability/')
-path.mkdir(exist_ok=True)
-import numpy as np
-import matplotlib.pyplot as plt
+from init import *
 from matplotlib.transforms import Affine2D
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
-from matplotlib.animation import FuncAnimation
 def gen_marker(fname:str, rotation:float=180):
     """Generate maker from svg image file.
 
@@ -26,7 +21,7 @@ def gen_marker(fname:str, rotation:float=180):
     person_marker = person_marker.transformed(Affine2D().scale(-1,1))
     return person_marker
 
-subway_marker = gen_marker('icons/subway.svg',180)
+subway_marker = gen_marker(path.parents[1]/'icons/subway.svg',180)
 #%%
 RED=np.array([230,0,18,255])/255.0
 GREEN=np.array([0,176,80,255])/255.0

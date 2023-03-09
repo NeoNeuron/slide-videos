@@ -1,12 +1,7 @@
 # %%
-from pathlib import Path
-path = Path('./geometric_probability/')
-path.mkdir(exist_ok=True)
-import numpy as np
-import matplotlib.pyplot as plt
+from init import *
 plt.rcParams['axes.spines.top']=False
 plt.rcParams['axes.spines.right']=False
-from matplotlib.animation import FuncAnimation
 #%%
 RED=np.array([230,0,18,255])/255.0
 GREEN=np.array([0,176,80,255])/255.0

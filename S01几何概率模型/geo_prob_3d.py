@@ -1,10 +1,8 @@
 #%%
-import numpy as np
-import matplotlib.pyplot as plt
+from init import *
 from matplotlib.transforms import Affine2D
 from svgpathtools import svg2paths
 from svgpath2mpl import parse_path
-from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 def gen_marker(fname:str, rotation:float=180):
     """Generate maker from svg image file.
@@ -24,7 +22,7 @@ def gen_marker(fname:str, rotation:float=180):
     person_marker = person_marker.transformed(Affine2D().scale(-1,1))
     return person_marker
 
-subway_marker = gen_marker('icons/subway.svg',180)
+subway_marker = gen_marker(path.parents[1]/'icons/subway.svg',180)
 
 ### patch start https://stackoverflow.com/a/16496436
 from mpl_toolkits.mplot3d.axis3d import Axis
@@ -146,7 +144,7 @@ zz = np.sqrt(1-xx**2-yy**2)
 # ax.plot_surface(xx,yy,zz,color='grey',edgecolors='none',lw=0, alpha=0.5)
 ax.plot_surface(xx, yy, zz, rstride=1, cstride=1, alpha=0.25, color='orange', lw=0)
 plt.tight_layout()
-plt.savefig('test.pdf')
+plt.savefig(path/'test.pdf')
 x = np.random.rand(10000,3)
 x[:,0:2] = x[:,0:2]*2-1
 x[:,2] = x[:,2]*2
@@ -156,5 +154,5 @@ ud = UpdateFigure_geo_prob(x, ax)
 # user FuncAnimation to generate frames of animation
 anim = FuncAnimation(fig, ud, frames=121, blit=True)
 # save animation as *.mp4
-anim.save('geo_prob_3d.mp4', fps=24, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+anim.save(path/'geo_prob_3d.mp4', fps=24, dpi=200, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 # %%

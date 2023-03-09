@@ -1,7 +1,6 @@
 # %%
-import numpy as np
+from init import *
 from mpl_toolkits.axisartist.axislines import AxesZero
-import matplotlib.pyplot as plt
 plt.rcParams['axes.spines.top']=False
 plt.rcParams['axes.spines.right']=False
 plt.rcParams['font.size']=30
@@ -25,7 +24,7 @@ for direction in ["xzero", "yzero"]:
     ax.axis[direction].set_visible(True)
 for direction in ['right', 'top', 'bottom', 'left']:
     ax.axis[direction].set_visible(False)
-plt.savefig(prefix+'_step1.pdf')
+plt.savefig(path/prefix+'_step1.pdf')
 
 ax.set_xticks([0, np.pi])
 ax.set_xticklabels(['', r'$\pi$'])
@@ -35,15 +34,15 @@ ax.plot([0,np.pi], [1,1], c='k')
 ax.plot([np.pi,np.pi], [1,0], c='k')
 ax.text(0.28,0.54,r'$\Omega$', color='#93391E')
 
-plt.savefig(prefix+'_step2.pdf')
+plt.savefig(path/prefix+'_step2.pdf')
 
 ax.text(0.30*np.pi,0.8,r'$x=\frac{l}{2}\sin\theta$', )
 x = np.linspace(0,np.pi,100)
 y = 0.7*np.sin(x)
 ax.plot(x,y, color='navy')
-plt.savefig(prefix+'_step3.pdf')
+plt.savefig(path/prefix+'_step3.pdf')
 
 ax.fill_between(x, 0, y, alpha=0.5)
 ax.text(1.4,0.34,r'$A$', color='#93391E')
-plt.savefig(prefix+'_step4.pdf')
+plt.savefig(path/prefix+'_step4.pdf')
 # %%
