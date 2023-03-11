@@ -36,7 +36,7 @@ class UpdateDist:
         text.set_bbox(dict(facecolor=[1,1,1,0.7], edgecolor='none'))
 
     def __call__(self, i):
-        if i > 0:
+        if i> 0 and i < self.n_in_each_frame.shape[0]:
             idx = self.n_in_each_frame[i]
             self.dots.set_data(self.xdata[:idx], self.data[:idx])
             self.line_main.set_data(self.xdata[:idx], self.cummean[:idx])
@@ -45,14 +45,16 @@ class UpdateDist:
 
 def gen_movie(lam):
     n = 100 # number of accumulated samples
-    flip_results = poisson.rvs(mu=lam, size=(n,), random_state=8)
+    data = poisson.rvs(mu=lam, size=(n,), random_state=8)
     fig, ax = plt.subplots(1,1, figsize=(8,4), gridspec_kw={'bottom':0.2})
 
     n_in_each_frame = (np.linspace(1,10,47)**2).astype(int)
     n_in_each_frame = np.hstack(([0], n_in_each_frame))
-    ud = UpdateDist(flip_results, lam, ax, n_in_each_frame)
-    anim = FuncAnimation(fig, ud, frames=n_in_each_frame.shape[0], blit=True)
-    anim.save(path/f"inventory_{lam:d}.mp4", fps=12, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
+    ud = UpdateDist(data, lam, ax, n_in_each_frame)
+    fps = 12
+    nframes = (n_in_each_frame.shape[0]//fps + 1)*fps
+    anim = FuncAnimation(fig, ud, frames=nframes, blit=True)
+    anim.save(path/f"inventory_{lam:d}.mp4", fps=fps, dpi=400, codec='libx264', bitrate=-1, extra_args=['-pix_fmt', 'yuv420p'])
 
 gen_movie(5)
 gen_movie(10)
